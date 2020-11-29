@@ -3,7 +3,13 @@ import './App.css';
 import ChartContainer from './components/ChartContainer/ChartContainer'
 
 function App() {
-  document.querySelector('body').style.overflow = 'hidden';;
+  // const $body = document.querySelector('body');
+  // let scrollPosition = 0;
+  // scrollPosition = window.pageYOffset;
+  // $body.style.overflow = 'hidden';
+  // $body.style.position = 'fixed';
+  // $body.style.top = `-${scrollPosition}px`;
+  // $body.style.width = '100%';
   return (
     <div>
       <ChartContainer></ChartContainer>

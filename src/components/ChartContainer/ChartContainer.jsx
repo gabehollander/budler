@@ -9,7 +9,10 @@ import Button from '@material-ui/core/Button';
 import { format } from 'date-fns';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Menu from '@material-ui/core/Menu';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip} from 'recharts';
+import CustomTooltip from '../CustomTooltip/CustomTooltip';
+
+
 
 
 import {
@@ -34,21 +37,27 @@ const useStyles = makeStyles(theme => ({
     },
     chart: {
       width: '70%',
-      height: '50%',
+      height: '60%',
       paddingTop: '1%',
       position: 'absolute',
       right: '6%'
     },
     criteriaContainer: {
-      display: 'flex',
+      display: '-webkit-box',   /* OLD - iOS 6-, Safari 3.1-6, BB7 */
+      display: '-ms-flexbox',  /* TWEENER - IE 10 */
+      display: '-webkit-flex', /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
+      display: 'flex', 
       flexDirection: 'column',
       position: 'absolute',
       top: '5%',
       left: '1%',
-      overflow: 'auto',
+      overflow: 'scroll',
       width: '18%',
       height: '80%',
       justifyContent: 'space-between'
+    },
+    criteriaItem:{
+      height: 'max-content',
     },
     searchButton: {
       position: 'absolute',
@@ -57,7 +66,8 @@ const useStyles = makeStyles(theme => ({
     },
     chartDisplayName: {
       textAlign: 'center',
-      fontSize: '200%'
+      fontSize: '7vh',
+      marginLeft: '7%'
     },
     dateInput: {
       fontSize: '90%'
@@ -190,6 +200,7 @@ export default function ChartContainer(props) {
           setToLoaded(true);
           let fridayIndex = 1;
           for (let i=1;i<9;i++) {
+            // sometimes getDay is zero indexed, sometimes its not, fuck me right?
             if (new Date(json[json.length-i]).getDay() === 4) {
               fridayIndex = i;
               break;
@@ -317,26 +328,45 @@ export default function ChartContainer(props) {
       return []
     }
 
+
     function SymbolChart(props) {
 
+      // const dataMemo = React.useMemo(
+      //   () => [
+      //     {
+      //       label: 'Series 1',
+      //       data: props.data.filter((siv) => {
+      //         return siv['Item'] ? true : false
+      //       })
+      //       .map((d, index) => {
+      //         return {x:d['Item'].date, y:d['Item'].bid}
+      //       }),
+      //     },
+      //   ],
+      //   [...props.data]
+      // )
+
       const dataMemo = React.useMemo(
-        () => [
-          {
-            label: 'Series 1',
-            data: props.data.filter((siv) => {
+        () => 
+          
+            props.data.filter((siv) => {
               return siv['Item'] ? true : false
             })
             .map((d, index) => {
-              return {x:d['Item'].date, y:d['Item'].bid}
-            }),
-          },
-        ],
+              return {x:d['Item'].date, $:d['Item'].bid}
+            })
+
+        ,
         [...props.data]
       )
      
       const axes = React.useMemo(
         () => [
-          { primary: true, type: 'ordinal', position: 'bottom'},
+          { primary: true, type: 'ordinal', position: 'bottom', format: (d) => {
+            return d
+            },
+            maxLabelRotation: 70
+          },
           { type: 'linear', position: 'left' }
         ],
         [...props.data]
@@ -370,9 +400,10 @@ export default function ChartContainer(props) {
       );
 
       const onClick = (datum) => {
-        if (datum) {
-          setSelectedItem(data.find(x => x.Item.date === datum.primary));
-        }
+          if (datum) {
+            console.log(datum);
+            setSelectedItem(data.find(x => x.Item.date === datum.payload.x));
+          }
       }
       const onFocus = (datum) => {
         if (datum) {
@@ -385,24 +416,47 @@ export default function ChartContainer(props) {
      return (
         // A react-chart hyper-responsively and continuously fills the available
         // space of its parent element automatically
-        <div
-          className={classes.chart}
-        >
+
+        // <div
+        //   className={classes.chart}
+        // >
+        //   <div className={classes.chartDisplayName}>
+        //     {chartDisplayName}
+        //   </div>
+
+        //   {noData ? <div className={classes.noData}>No Data</div> :
+        //   <Chart 
+        //     data={dataMemo}
+        //     axes={axes} 
+        //     primaryCursor={primaryCursor}
+        //     secondaryCursor={secondaryCursor}
+        //     onClick={onClick}
+        //     onFocus={onFocus}
+        //   />
+        //   }
+        // </div>
+
+        //activeDot={{ onClick: onClick }}
+
+      <div className={classes.chart}>
           <div className={classes.chartDisplayName}>
             {chartDisplayName}
           </div>
+          
+            {noData ? <div className={classes.noData}>No Data</div> :
+          <ResponsiveContainer height='100%' width='100%'>
+            <LineChart data={dataMemo}>
+              <Line type="monotone" dataKey="$" stroke="#8884d8" isAnimationActive={false} activeDot={{ onClick: onClick }}/>
+              <CartesianGrid stroke="#ccc" />
+              <XAxis tick={{fontSize: '3vh'}} dataKey="x" />
+              <YAxis />
+              <Tooltip customCallback={onClick} content={<CustomTooltip />} />
+            </LineChart>
+          </ResponsiveContainer>}
 
-          {noData ? <div className={classes.noData}>No Data</div> :
-          <Chart 
-            data={dataMemo}
-            axes={axes} 
-            primaryCursor={primaryCursor}
-            secondaryCursor={secondaryCursor}
-            onClick={onClick}
-            onFocus={onFocus}
-          />
-          }
-        </div>
+
+      </div>
+            
       )
     }
 
@@ -432,6 +486,7 @@ export default function ChartContainer(props) {
                   <MenuItem value="AAPL">AAPL</MenuItem>
                 </Select>
               </div>
+              <div className={classes.criteriaItem}>
                 {fromLoaded &&
                 <KeyboardDatePicker
                   disableToolbar
@@ -450,6 +505,8 @@ export default function ChartContainer(props) {
                   InputProps={{ className: classes.dateInput }}
                 />
                 }
+              </div>
+              <div className={classes.criteriaItem}>
                 {toLoaded &&
                 <KeyboardDatePicker
                   disableToolbar
@@ -468,6 +525,8 @@ export default function ChartContainer(props) {
                   InputProps={{ className: classes.dateInput }}
                 />
                 }
+              </div>
+              <div className={classes.criteriaItem}>
                 {expLoaded &&
                 <KeyboardDatePicker
                   disableToolbar
@@ -486,6 +545,8 @@ export default function ChartContainer(props) {
                   InputProps={{ className: classes.dateInput }}
                 />
                 }
+              </div>
+              <div className={classes.criteriaItem}>
               <form className={classes.root} noValidate autoComplete="off">
                 <TextField id="standard-basic" 
                   label="Strike"
@@ -493,6 +554,8 @@ export default function ChartContainer(props) {
                   onBlur={handleStrikeChange}
                 />
               </form>
+              </div>
+              <div className={classes.criteriaItem}>
               <FormControlLabel
                 control={
                   <Switch
@@ -508,6 +571,7 @@ export default function ChartContainer(props) {
                 labelPlacement="top"
                 classes={{labelPlacementTop: classes.labelPlacementTop}}
               />
+              </div>
             </div>
             <Button 
               variant="contained"
