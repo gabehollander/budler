@@ -36,7 +36,7 @@ const useStyles = makeStyles(theme => ({
       width: '70%',
       height: '50%',
       paddingTop: '1%',
-      position: 'fixed',
+      position: 'absolute',
       right: '6%'
     },
     criteriaContainer: {
