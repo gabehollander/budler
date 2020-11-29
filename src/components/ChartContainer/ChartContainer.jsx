@@ -9,6 +9,7 @@ import Button from '@material-ui/core/Button';
 import { format } from 'date-fns';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Menu from '@material-ui/core/Menu';
 
 
 import {
@@ -32,11 +33,11 @@ const useStyles = makeStyles(theme => ({
       overflow: 'hidden'
     },
     chart: {
-      width: '75%',
+      width: '70%',
       height: '50%',
       paddingTop: '1%',
-      position: 'absolute',
-      right: '3%'
+      position: 'fixed',
+      right: '6%'
     },
     criteriaContainer: {
       display: 'flex',
@@ -76,7 +77,8 @@ const useStyles = makeStyles(theme => ({
       position: 'absolute',
       bottom: '0',
       right: '0',
-      textAlign: 'center'
+      textAlign: 'center',
+      overflow: 'auto'
     },
     greeksData: {
       width: 'fit-content',
@@ -85,53 +87,13 @@ const useStyles = makeStyles(theme => ({
       alignItems: 'center',
       fontSize: '4vh',
       margin: '0 2%'
+    },
+    noData: {
+      textAlign: 'center',
+      height: '100%',
+      paddingTop: '20%'
     }
 }))
-
-
-function SymbolChart(props) {
-
-    const dataMemo = React.useMemo(
-      () => [
-        {
-          label: 'Series 1',
-          data: props.data.filter((siv) => {
-            return siv['Item'] ? true : false
-          })
-          .map((d, index) => {
-            return {x:d['Item'].date, y:d['Item'].bid}
-          }),
-        },
-      ],
-      [...props.data]
-    )
-   
-    const axes = React.useMemo(
-      () => [
-        { primary: true, type: 'ordinal', position: 'bottom'},
-        { type: 'linear', position: 'left' }
-      ],
-      [...props.data]
-    )
-  
-   return (
-      // A react-chart hyper-responsively and continuously fills the available
-      // space of its parent element automatically
-      <div
-        className={props.classes.chart}
-      >
-        <div className={props.classes.chartDisplayName}>
-          {props.chartDisplayName}
-        </div>
-        <Chart 
-          data={dataMemo}
-          axes={axes} 
-          // options={options}
-        />
-      </div>
-    )
-  }
-
 
 export default function ChartContainer(props) {
 
@@ -157,15 +119,14 @@ export default function ChartContainer(props) {
     const [oldExp, setOldExp] = useState('2019-02-22');
     const [oldStrike, setOldStrike] = useState(120);
     const [oldBear, setOldBear] = useState(false);
-    const [greeks, setGreeks] = useState({});
     const [selectedItem, setSelectedItem] = useState({});
+    const [noData, setNoData] = useState(true);
 
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
         Accept: 'application/json',
       };
-
 
     useEffect(() => {
       if (fromLoaded, toLoaded, expLoaded) {
@@ -182,6 +143,9 @@ export default function ChartContainer(props) {
             }),
         }).then(res => res.json())
         .then(json => {
+            json.filter((siv) => {
+              return siv['Item'] ? true : false
+            }).length === 0 ? setNoData(true) : setNoData(false);
             setData(json)
             setChartLoaded(true);
             setChartDisplayName(formatSymbolDisplayName(symbol,strike,exp,bear));
@@ -237,10 +201,6 @@ export default function ChartContainer(props) {
       });
     }, []);
 
-    // useEffect(() => {
-    //   setGreeks()
-    // },[selectedItem])
-
     const search = () => {
       setSearchCriteriaChanged(false);
       setChartLoaded(false);
@@ -257,7 +217,9 @@ export default function ChartContainer(props) {
         }),
       }).then(res => res.json())
       .then(json => {
-        console.log(json[json.length-2]);
+        json.filter((siv) => {
+          return siv['Item'] ? true : false
+        }).length === 0 ? setNoData(true) : setNoData(false);
         setData(json)
         setChartLoaded(true);
         setChartDisplayName(formatSymbolDisplayName(symbol,strike,exp,bear));
@@ -337,21 +299,111 @@ export default function ChartContainer(props) {
 
     const GreekElems = () => {
       if(selectedItem && selectedItem.Item && selectedItem.Item.OptionGreeks) {
-        return [
-          <span className={classes.greeksData} ><b>&Delta;</b>: {selectedItem.Item.OptionGreeks.delta}</span>,
-          <span className={classes.greeksData}><b>&Gamma;</b>: {selectedItem.Item.OptionGreeks.gamma}</span>,
-          <span className={classes.greeksData}><b>&Theta;</b>: {selectedItem.Item.OptionGreeks.theta}</span>,
-          <span className={classes.greeksData}><b>&Rho;</b>: {selectedItem.Item.OptionGreeks.rho}</span>,
-          <span className={classes.greeksData}><b>Vega</b>: {selectedItem.Item.OptionGreeks.vega}</span>,
-          <span className={classes.greeksData}><b>IV</b>: {selectedItem.Item.OptionGreeks.iv}</span>,
-          <span className={classes.greeksData}><b>Date</b>: {selectedItem.Item.date}</span>,
-          <span className={classes.greeksData}><b>Ask</b>: {selectedItem.Item.ask}</span>,
-          <span className={classes.greeksData}><b>Bid</b>: {selectedItem.Item.bid}</span>,
-          <span className={classes.greeksData}><b>OI</b>: {selectedItem.Item.openInterest}</span>,
-          <span className={classes.greeksData}><b>Volume</b>: {selectedItem.Item.volume}</span>,
-        ] 
+        const ret = [
+        <span className={classes.greeksData} ><b>&Delta;</b>: {selectedItem.Item.OptionGreeks.delta}</span>,
+        <span className={classes.greeksData}><b>&Gamma;</b>: {selectedItem.Item.OptionGreeks.gamma}</span>,
+        <span className={classes.greeksData}><b>&Theta;</b>: {selectedItem.Item.OptionGreeks.theta}</span>,
+        <span className={classes.greeksData}><b>&Rho;</b>: {selectedItem.Item.OptionGreeks.rho}</span>,
+        <span className={classes.greeksData}><b>Vega</b>: {selectedItem.Item.OptionGreeks.vega}</span>,
+        <span className={classes.greeksData}><b>IV</b>: {selectedItem.Item.OptionGreeks.iv}</span>,
+        <span className={classes.greeksData}><b>Date</b>: {selectedItem.Item.date}</span>,
+        <span className={classes.greeksData}><b>Ask</b>: {selectedItem.Item.ask}</span>,
+        <span className={classes.greeksData}><b>Bid</b>: {selectedItem.Item.bid}</span>,
+        <span className={classes.greeksData}><b>OI</b>: {selectedItem.Item.openInterest}</span>,
+        <span className={classes.greeksData}><b>Volume</b>: {selectedItem.Item.volume}</span>,
+        ]
+        return ret
       }
       return []
+    }
+
+    function SymbolChart(props) {
+
+      const dataMemo = React.useMemo(
+        () => [
+          {
+            label: 'Series 1',
+            data: props.data.filter((siv) => {
+              return siv['Item'] ? true : false
+            })
+            .map((d, index) => {
+              return {x:d['Item'].date, y:d['Item'].bid}
+            }),
+          },
+        ],
+        [...props.data]
+      )
+     
+      const axes = React.useMemo(
+        () => [
+          { primary: true, type: 'ordinal', position: 'bottom'},
+          { type: 'linear', position: 'left' }
+        ],
+        [...props.data]
+      )
+  
+      const primaryCursor = React.useMemo(
+        () => ({
+          render: props => (
+            <span style={{ fontSize: "1rem" }}>
+              <span role="img" aria-label="icon">
+              </span>{" "}
+              {(props.formattedValue || "").toString()}
+            </span>
+          )
+        }),
+        []
+      );
+      const secondaryCursor = React.useMemo(
+        () => ({
+          render: props => (
+            <span style={{ fontSize: "1rem" }}>
+              <span role="img" aria-label="icon">
+                $
+              </span>{" "}
+              {(props.value || "").toString()}
+            </span>
+          ),
+          showLine: false
+        }),
+        []
+      );
+
+      const onClick = (datum) => {
+        if (datum) {
+          setSelectedItem(data.find(x => x.Item.date === datum.primary));
+        }
+      }
+      const onFocus = (datum) => {
+        if (datum) {
+          if (window.screen.width <= 813) {
+            setSelectedItem(data.find(x => x.Item.date === datum.primary));
+          }
+        }
+      }
+    
+     return (
+        // A react-chart hyper-responsively and continuously fills the available
+        // space of its parent element automatically
+        <div
+          className={classes.chart}
+        >
+          <div className={classes.chartDisplayName}>
+            {chartDisplayName}
+          </div>
+
+          {noData ? <div className={classes.noData}>No Data</div> :
+          <Chart 
+            data={dataMemo}
+            axes={axes} 
+            primaryCursor={primaryCursor}
+            secondaryCursor={secondaryCursor}
+            onClick={onClick}
+            onFocus={onFocus}
+          />
+          }
+        </div>
+      )
     }
 
     return (
@@ -359,14 +411,13 @@ export default function ChartContainer(props) {
         <div>Loading...</div> :
         <MuiPickersUtilsProvider utils={MomentUtils}>
           <Paper className={classes.gridContainer} elevation={3}>
-            {chartLoaded ?
-              <SymbolChart
-                chartDisplayName={chartDisplayName}
-                classes={classes}
-                data={data}
-              ></SymbolChart>:
-              <div className={classes.chart}>Loading...</div>
-            }
+              {chartLoaded ?
+                <SymbolChart
+                  chartDisplayName={chartDisplayName}
+                  data={data}
+                ></SymbolChart>:
+                <div className={classes.chart}>Loading...</div>
+              }
             <div className={classes.criteriaContainer}>
               <div className={classes.criteriaItem}>
                 <InputLabel style={{fontSize: '.75rem'}} id="label">Symbol</InputLabel>
@@ -476,5 +527,4 @@ export default function ChartContainer(props) {
         </MuiPickersUtilsProvider>
         )
     )
-    
 }
