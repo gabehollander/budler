@@ -130,7 +130,7 @@ export default function ChartContainer(props) {
 
     useEffect(() => {
       if (fromLoaded, toLoaded, expLoaded) {
-        fetch('http://localhost:8888/chain', {
+        fetch('https://diamondhands-express.herokuapp.com/chain', {
             method: 'POST',
             headers: headers,
             body: JSON.stringify({ 
@@ -176,7 +176,7 @@ export default function ChartContainer(props) {
     },[symbol,strike,from,to,exp,bear])
 
     useEffect(() => {
-      fetch('http://localhost:8888/valid_dates', {
+      fetch('https://diamondhands-express.herokuapp.com/valid_dates', {
         method: 'POST',
         headers: headers,
       }).then(res => res.json())
@@ -204,7 +204,7 @@ export default function ChartContainer(props) {
     const search = () => {
       setSearchCriteriaChanged(false);
       setChartLoaded(false);
-      fetch('http://localhost:8888/chain', {
+      fetch('https://diamondhands-express.herokuapp.com/chain', {
         method: 'POST',
         headers: headers,
         body: JSON.stringify({ 
