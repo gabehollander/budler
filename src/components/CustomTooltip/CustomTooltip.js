@@ -18,11 +18,16 @@ const CustomTooltip = props => {
     ];
 
     // we render the default, but with our overridden payload
-    return <DefaultTooltipContent {...props} payload={newPayload} />;
+    const customTooltip = (
+    <div style={{pointerEvents: 'auto'}}onClick={() => {props.customCallback(props.payload[0])}}>
+        <DefaultTooltipContent {...props} payload={newPayload} />
+    </div>
+    )
+    return customTooltip;
   }
 
   // we just render the default
-  return <DefaultTooltipContent {...props} />;
+  return <DefaultTooltipContent {...props} onClick={props.customCallback(props.payload[0])} />;
 };
 
 export default CustomTooltip;

@@ -1,19 +1,33 @@
 import logo from './logo.svg';
 import './App.css';
 import ChartContainer from './components/ChartContainer/ChartContainer'
+import DeviceOrientation, { Orientation } from 'react-screen-orientation'
 
 function App() {
-  // const $body = document.querySelector('body');
-  // let scrollPosition = 0;
-  // scrollPosition = window.pageYOffset;
-  // $body.style.overflow = 'hidden';
-  // $body.style.position = 'fixed';
-  // $body.style.top = `-${scrollPosition}px`;
-  // $body.style.width = '100%';
+
+  
   return (
-    <div>
-      <ChartContainer></ChartContainer>
-    </div>
+    <DeviceOrientation lockOrientation={'landscape'}>
+      {/* Will only be in DOM in landscape */}
+      <Orientation orientation='landscape' alwaysRender={false}>
+        <div>
+          <ChartContainer></ChartContainer>
+        </div>
+      </Orientation>
+      {/* Will stay in DOM, but is only visible in portrait */}
+      <Orientation orientation='portrait' alwaysRender={false}>
+        <div>
+          <p style={{
+            height: '100%',
+            width: '100%',
+            position: 'absolute',
+            textAlign: 'center',
+            top: '45%'
+          }}
+          >Please rotate your device</p>
+        </div>
+      </Orientation>
+    </DeviceOrientation>
   );
 }
 

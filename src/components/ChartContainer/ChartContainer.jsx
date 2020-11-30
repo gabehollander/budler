@@ -12,16 +12,12 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip} from 'recharts';
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
 
-
-
-
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker,
 } from '@material-ui/pickers';
 import 'date-fns';
 import MomentUtils from '@date-io/moment';
-import { Chart } from 'react-charts'
 import { Typography } from '@material-ui/core';
 
 
@@ -36,11 +32,11 @@ const useStyles = makeStyles(theme => ({
       overflow: 'hidden'
     },
     chart: {
-      width: '70%',
-      height: '60%',
+      width: '82%',
+      height: '67%',
       paddingTop: '1%',
       position: 'absolute',
-      right: '6%'
+      right: '-1%'
     },
     criteriaContainer: {
       display: '-webkit-box',   /* OLD - iOS 6-, Safari 3.1-6, BB7 */
@@ -52,12 +48,18 @@ const useStyles = makeStyles(theme => ({
       top: '5%',
       left: '1%',
       overflow: 'scroll',
-      width: '18%',
-      height: '80%',
-      justifyContent: 'space-between'
+      width: '20%',
+      height: '75%',
+      justifyContent: 'space-between',
+      border: 'solid 1px lightgrey',
+      borderRadius: '4px',
+      paddingLeft: '1%',
+      paddingTop: '1%',
+      maxWidth: '238px',
     },
     criteriaItem:{
       height: 'max-content',
+      width: '95%'
     },
     searchButton: {
       position: 'absolute',
@@ -69,8 +71,11 @@ const useStyles = makeStyles(theme => ({
       fontSize: '7vh',
       marginLeft: '7%'
     },
-    dateInput: {
-      fontSize: '90%'
+    textInput: {
+      fontSize: '3vh',
+      "& .MuiIconButton-root": {
+        paddingLeft: 0
+      }
     },
     labelPlacementTop: {
       alignItems: 'normal',
@@ -82,11 +87,11 @@ const useStyles = makeStyles(theme => ({
     },
     greeksGrid: {
       display: 'block',
-      height: '28%',
-      width: '80%',
+      height: '20%',
+      width: '70%',
       position: 'absolute',
       bottom: '0',
-      right: '0',
+      right: '4%',
       textAlign: 'center',
       overflow: 'auto'
     },
@@ -95,7 +100,7 @@ const useStyles = makeStyles(theme => ({
       height: '50%',
       display: 'inline-flex',
       alignItems: 'center',
-      fontSize: '4vh',
+      fontSize: '2.5vh',
       margin: '0 2%'
     },
     noData: {
@@ -131,6 +136,7 @@ export default function ChartContainer(props) {
     const [oldBear, setOldBear] = useState(false);
     const [selectedItem, setSelectedItem] = useState({});
     const [noData, setNoData] = useState(true);
+    const [tooltipPosition, setTooltipPosition] = useState({});
 
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -331,21 +337,6 @@ export default function ChartContainer(props) {
 
     function SymbolChart(props) {
 
-      // const dataMemo = React.useMemo(
-      //   () => [
-      //     {
-      //       label: 'Series 1',
-      //       data: props.data.filter((siv) => {
-      //         return siv['Item'] ? true : false
-      //       })
-      //       .map((d, index) => {
-      //         return {x:d['Item'].date, y:d['Item'].bid}
-      //       }),
-      //     },
-      //   ],
-      //   [...props.data]
-      // )
-
       const dataMemo = React.useMemo(
         () => 
           
@@ -360,83 +351,13 @@ export default function ChartContainer(props) {
         [...props.data]
       )
      
-      const axes = React.useMemo(
-        () => [
-          { primary: true, type: 'ordinal', position: 'bottom', format: (d) => {
-            return d
-            },
-            maxLabelRotation: 70
-          },
-          { type: 'linear', position: 'left' }
-        ],
-        [...props.data]
-      )
-  
-      const primaryCursor = React.useMemo(
-        () => ({
-          render: props => (
-            <span style={{ fontSize: "1rem" }}>
-              <span role="img" aria-label="icon">
-              </span>{" "}
-              {(props.formattedValue || "").toString()}
-            </span>
-          )
-        }),
-        []
-      );
-      const secondaryCursor = React.useMemo(
-        () => ({
-          render: props => (
-            <span style={{ fontSize: "1rem" }}>
-              <span role="img" aria-label="icon">
-                $
-              </span>{" "}
-              {(props.value || "").toString()}
-            </span>
-          ),
-          showLine: false
-        }),
-        []
-      );
-
       const onClick = (datum) => {
-          if (datum) {
-            console.log(datum);
-            setSelectedItem(data.find(x => x.Item.date === datum.payload.x));
-          }
-      }
-      const onFocus = (datum) => {
         if (datum) {
-          if (window.screen.width <= 813) {
-            setSelectedItem(data.find(x => x.Item.date === datum.primary));
-          }
+          setSelectedItem(data.find(x => x.Item.date === datum.payload.x));
         }
       }
     
      return (
-        // A react-chart hyper-responsively and continuously fills the available
-        // space of its parent element automatically
-
-        // <div
-        //   className={classes.chart}
-        // >
-        //   <div className={classes.chartDisplayName}>
-        //     {chartDisplayName}
-        //   </div>
-
-        //   {noData ? <div className={classes.noData}>No Data</div> :
-        //   <Chart 
-        //     data={dataMemo}
-        //     axes={axes} 
-        //     primaryCursor={primaryCursor}
-        //     secondaryCursor={secondaryCursor}
-        //     onClick={onClick}
-        //     onFocus={onFocus}
-        //   />
-        //   }
-        // </div>
-
-        //activeDot={{ onClick: onClick }}
 
       <div className={classes.chart}>
           <div className={classes.chartDisplayName}>
@@ -445,13 +366,26 @@ export default function ChartContainer(props) {
           
             {noData ? <div className={classes.noData}>No Data</div> :
           <ResponsiveContainer height='100%' width='100%'>
-            <LineChart data={dataMemo}>
-              <Line type="monotone" dataKey="$" stroke="#8884d8" isAnimationActive={false} activeDot={{ onClick: onClick }}/>
-              <CartesianGrid stroke="#ccc" />
-              <XAxis tick={{fontSize: '3vh'}} dataKey="x" />
+            <LineChart margin={{right: 40}} data={dataMemo}>
+              <Line type="monotone" dataKey="$" stroke="#8884d8"/>
+              {/* <CartesianGrid stroke="#ccc" /> */}
+              <XAxis 
+                tick={{fontSize: '3vh'}} 
+                dataKey="x" 
+                tickFormatter={(d) => {
+                  const split = d.split('-');
+                  return split[1] + '-' + split[2]
+                }}
+                width={'110%'}
+              />
               <YAxis />
-              <Tooltip customCallback={onClick} content={<CustomTooltip />} />
-            </LineChart>
+              <Tooltip 
+                customCallback={onClick}
+                content={<CustomTooltip/>} 
+                position={{ x: 'auto', y: 0 }}
+                offset={0}
+              />
+              </LineChart>
           </ResponsiveContainer>}
 
 
@@ -482,6 +416,7 @@ export default function ChartContainer(props) {
                   onOpen={handleSymbolOpen}
                   value={symbol}
                   onChange={handleSymbolChange}
+                  style={{fontSize: '3vh'}}
                 >
                   <MenuItem value="AAPL">AAPL</MenuItem>
                 </Select>
@@ -502,7 +437,7 @@ export default function ChartContainer(props) {
                   minDate={validDates[0]}
                   allowKeyboardControl={true}
                   initialFocusedDate={from}
-                  InputProps={{ className: classes.dateInput }}
+                  InputProps={{ className: classes.textInput }}
                 />
                 }
               </div>
@@ -522,7 +457,7 @@ export default function ChartContainer(props) {
                   minDate={from}
                   allowKeyboardControl={true}
                   initialFocusedDate={from}
-                  InputProps={{ className: classes.dateInput }}
+                  InputProps={{ className: classes.textInput }}
                 />
                 }
               </div>
@@ -542,7 +477,7 @@ export default function ChartContainer(props) {
                   minDate={from}
                   allowKeyboardControl={true}
                   initialFocusedDate={from}
-                  InputProps={{ className: classes.dateInput }}
+                  InputProps={{ className: classes.textInput }}
                 />
                 }
               </div>
@@ -552,6 +487,7 @@ export default function ChartContainer(props) {
                   label="Strike"
                   defaultValue={strike}
                   onBlur={handleStrikeChange}
+                  InputProps={{ className: classes.textInput }}
                 />
               </form>
               </div>
@@ -578,6 +514,7 @@ export default function ChartContainer(props) {
               onClick={search}
               className={classes.searchButton}
               disabled={!searchCriteriaChanged}
+              color="primary"
             >Search
             </Button>
             <Paper
