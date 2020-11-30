@@ -369,8 +369,8 @@ export default function ChartContainer(props) {
       )
      
       const onClick = (datum) => {
-        if (datum) {
-          console.log(data);
+        if (datum && datum.payload && datum.payload.x) {
+          console.log(datum);
           setSelectedItem(data.find(x => x.Item.date === datum.payload.x));
         }
       }
