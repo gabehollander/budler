@@ -370,7 +370,6 @@ export default function ChartContainer(props) {
      
       const onClick = (datum) => {
         if (datum && datum.payload && datum.payload.x) {
-          console.log(datum);
           setSelectedItem(data.find(x => x.Item.date === datum.payload.x));
         }
       }
@@ -388,7 +387,7 @@ export default function ChartContainer(props) {
               <Line type="monotone" dataKey="$" stroke="#8884d8"/>
               {/* <CartesianGrid stroke="#ccc" /> */}
               <XAxis 
-                tick={{fontSize: '3vh'}} 
+                tick={{fontSize: '2vh'}} 
                 dataKey="x" 
                 tickFormatter={(d) => {
                   const split = d.split('-');
