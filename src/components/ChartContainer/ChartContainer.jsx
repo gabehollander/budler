@@ -174,9 +174,10 @@ export default function ChartContainer(props) {
             }),
         }).then(res => res.json())
         .then(json => {
-            json.filter((siv) => {
+            json = json.filter((siv) => {
               return siv['Item'] ? true : false
-            }).length === 0 ? setNoData(true) : setNoData(false);
+            })
+            json.length === 0 ? setNoData(true) : setNoData(false);
             setData(json)
             setChartLoaded(true);
             setChartDisplayName(formatSymbolDisplayName(symbol,strike,exp,bear));
@@ -249,9 +250,10 @@ export default function ChartContainer(props) {
         }),
       }).then(res => res.json())
       .then(json => {
-        json.filter((siv) => {
+        json = json.filter((siv) => {
           return siv['Item'] ? true : false
-        }).length === 0 ? setNoData(true) : setNoData(false);
+        })
+        json.length === 0 ? setNoData(true) : setNoData(false);
         setData(json)
         setChartLoaded(true);
         setChartDisplayName(formatSymbolDisplayName(symbol,strike,exp,bear));
@@ -368,6 +370,7 @@ export default function ChartContainer(props) {
      
       const onClick = (datum) => {
         if (datum) {
+          console.log(data);
           setSelectedItem(data.find(x => x.Item.date === datum.payload.x));
         }
       }
