@@ -32,11 +32,11 @@ const useStyles = makeStyles(theme => ({
       overflow: 'hidden'
     },
     chart: {
-      width: '82%',
+      width: '80%',
       height: '67%',
       paddingTop: '1%',
       position: 'absolute',
-      right: '-1%'
+      right: '0%'
     },
     criteriaContainer: {
       display: '-webkit-box',   /* OLD - iOS 6-, Safari 3.1-6, BB7 */
@@ -107,6 +107,21 @@ const useStyles = makeStyles(theme => ({
       textAlign: 'center',
       height: '100%',
       paddingTop: '20%'
+    },
+    pageLoading: {
+      height: '100%',
+      width: '100%',
+      position: 'absolute',
+      textAlign: 'center',
+      top: '45%'
+    },
+    chartLoading: {
+      height: '100%',
+      width: '100%',
+      position: 'absolute',
+      textAlign: 'center',
+      top: '45%',
+      left: '10%'
     }
 }))
 
@@ -396,7 +411,7 @@ export default function ChartContainer(props) {
 
     return (
         (data.length === 0 ?
-        <div>Loading...</div> :
+        <div className={classes.pageLoading}>Loading...</div> :
         <MuiPickersUtilsProvider utils={MomentUtils}>
           <Paper className={classes.gridContainer} elevation={3}>
               {chartLoaded ?
@@ -404,7 +419,7 @@ export default function ChartContainer(props) {
                   chartDisplayName={chartDisplayName}
                   data={data}
                 ></SymbolChart>:
-                <div className={classes.chart}>Loading...</div>
+                <div className={classes.chartLoading}>Loading...</div>
               }
             <div className={classes.criteriaContainer}>
               <div className={classes.criteriaItem}>
