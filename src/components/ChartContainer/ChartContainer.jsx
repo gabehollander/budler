@@ -187,7 +187,9 @@ export default function ChartContainer(props) {
             setOldFrom(from);
             setOldTo(to);
             setOldExp(exp);
-            setSelectedItem(Object.keys(json[json.length-1]).length === 0 ? json[json.length-2] : json[json.length-1]);
+            if (json.length !== 0) {
+              setSelectedItem(Object.keys(json[json.length-1]).length === 0 ? json[json.length-2] : json[json.length-1]);
+            }
           });
       }
     }, [fromLoaded, toLoaded, expLoaded]);
@@ -263,7 +265,9 @@ export default function ChartContainer(props) {
         setOldFrom(from);
         setOldTo(to);
         //because options expiring that day will have {}
-        setSelectedItem(Object.keys(json[json.length-1]).length === 0 ? json[json.length-2] : json[json.length-1]);
+        if (json.length !== 0) {
+          setSelectedItem(Object.keys(json[json.length-1]).length === 0 ? json[json.length-2] : json[json.length-1]);
+        }
         setOldExp(exp);
       });
     }
@@ -387,7 +391,7 @@ export default function ChartContainer(props) {
               <Line type="monotone" dataKey="$" stroke="#8884d8"/>
               {/* <CartesianGrid stroke="#ccc" /> */}
               <XAxis 
-                tick={{fontSize: '2vh'}} 
+                tick={{fontSize: '2vh'}}
                 dataKey="x" 
                 tickFormatter={(d) => {
                   const split = d.split('-');
@@ -412,7 +416,7 @@ export default function ChartContainer(props) {
     }
 
     return (
-        (data.length === 0 ?
+        (data.length === 0 && !noData ?
         <div className={classes.pageLoading}>Loading...</div> :
         <MuiPickersUtilsProvider utils={MomentUtils}>
           <Paper className={classes.gridContainer} elevation={3}>
@@ -538,7 +542,7 @@ export default function ChartContainer(props) {
               className={classes.greeks}
             >
               <div className={classes.greeksGrid}>
-                <GreekElems></GreekElems>
+                {noData ? null : <GreekElems></GreekElems>}
               </div> 
             </Paper>
           </Paper>
