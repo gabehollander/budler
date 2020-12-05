@@ -445,7 +445,6 @@ export default function ChartContainer(props) {
             <Chip 
               className={classes.greeksData}
               label={selectedItem.Item.date} 
-              color='#f2f2f2'
             ></Chip>
           </div>
         )
@@ -539,6 +538,7 @@ export default function ChartContainer(props) {
                     }
                   }}
                 >
+                  <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="T">T</MenuItem>
                   <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="SPY">SPY</MenuItem>
                   <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="AAPL">AAPL</MenuItem>
                 </Select>
