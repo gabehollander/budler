@@ -11,6 +11,7 @@ import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip} from 'recharts';
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
+import Chip from '@material-ui/core/Chip';
 
 import {
   MuiPickersUtilsProvider,
@@ -29,14 +30,17 @@ const useStyles = makeStyles(theme => ({
       backgroundColor: '#f8f8ff',
       position: 'absolute',
       left: '5vw',
-      overflow: 'hidden'
+      overflow: 'hidden',
+      backgroundColor: '#1a1a1a',
+      color: '#f2f2f2'
     },
     chart: {
       width: '80%',
       height: '67%',
       paddingTop: '1%',
       position: 'absolute',
-      right: '0%'
+      right: '0%',
+      // backgroundColor: '#132c53'
     },
     criteriaContainer: {
       display: '-webkit-box',   /* OLD - iOS 6-, Safari 3.1-6, BB7 */
@@ -45,13 +49,13 @@ const useStyles = makeStyles(theme => ({
       display: 'flex', 
       flexDirection: 'column',
       position: 'absolute',
-      top: '5%',
+      top: '1%',
       left: '1%',
       overflow: 'scroll',
       width: '20%',
       height: '75%',
       justifyContent: 'space-between',
-      border: 'solid 1px lightgrey',
+      border: 'solid 1px #f2f2f2',
       borderRadius: '4px',
       paddingLeft: '1%',
       paddingTop: '1%',
@@ -59,7 +63,8 @@ const useStyles = makeStyles(theme => ({
     },
     criteriaItem:{
       height: 'max-content',
-      width: '95%'
+      width: '95%',
+      color: '#f2f2f2'
     },
     searchButton: {
       position: 'absolute',
@@ -69,35 +74,40 @@ const useStyles = makeStyles(theme => ({
     chartDisplayName: {
       textAlign: 'center',
       fontSize: '7vh',
-      marginLeft: '7%'
+      marginLeft: '7%',
+      color: '#f2f2f2'
     },
     textInput: {
       fontSize: '3vh',
       "& .MuiIconButton-root": {
         paddingLeft: 0
-      }
+      },
+      color: '#f2f2f2'
     },
     labelPlacementTop: {
       alignItems: 'normal',
       margin: '4% 0'
     },
     bearInputLabel: {
-      color: 'rgba(0, 0, 0, 0.54)',
-      fontSize: '.75rem'
+      fontSize: '.75rem',
+      color: '#f2f2f2'
     },
     greeksGrid: {
-      display: 'block',
+      display: '-webkit-box',
       height: '20%',
       width: '70%',
       position: 'absolute',
       bottom: '0',
-      right: '4%',
+      right: '5%',
       textAlign: 'center',
-      overflow: 'auto'
+      overflow: 'scroll',
+      alignItems: 'center',
+      border: 'solid 1px #f2f2f2',
+      borderRadius: '4px',
     },
     greeksData: {
-      width: 'fit-content',
-      height: '50%',
+      width: '100%',
+      height: '10vh',
       display: 'inline-flex',
       alignItems: 'center',
       fontSize: '2.5vh',
@@ -122,45 +132,82 @@ const useStyles = makeStyles(theme => ({
       textAlign: 'center',
       top: '45%',
       left: '10%'
+    },
+    customSelect: {
+      "& ul": {
+        backgroundColor: "#262626",
+      }
+    },
+    greeksDataChipContainer: {
+      width: '20%',
+      margin: '0 1%',
+      marginTop: '3%',
+    },
+    greeksDataLabel: {
+      margin:'0',
+      color: '#f2f2f2',
+      fontSize: '2vh',
     }
+
 }))
 
 export default function ChartContainer(props) {
 
+  const today = () => {
+    const formatYmd = date => date.toISOString().slice(0, 10);
+    return formatYmd(new Date());
+  }
+
+  const aWeekAgo = () => {
+    const formatYmd = date => date.toISOString().slice(0, 10);
+    let d = new Date()
+    d.setDate(d.getDate() - 21)
+    return formatYmd(d);
+  }
+
+  const lastFriday = () => {
+    for (let i=0;i<8;i++) {
+      let d = new Date();
+      // sometimes getDay is zero indexed, sometimes its not, fuck me right?
+      d.setDate(d.getDate() - i)
+      console.log(d)
+      if ((d.getDay() === 4) && i!==0) {
+        return d.toISOString().slice(0, 10);
+      }
+    };
+  }
+
     const classes = useStyles();
     const [data, setData] = useState([]);
+    const [currentData, setCurrentData] = useState([]);
     const [symbol, setSymbol] = useState('AAPL');
     const [symbolOpen, setSymbolOpen] = useState(false);
-    const [validDates, setValidDates] = useState([]);
-    const [from, setFrom] = useState('2018-12-27');
-    const [to, setTo] = useState('2019-01-31');
+    const [from, setFrom] = useState(aWeekAgo());
+    const [to, setTo] = useState(today());
     const [strike, setStrike] = useState(120);
     const [bear, setBear] = useState(false);
-    const [exp, setExp] = useState('2019-02-22');
-    const [fromLoaded, setFromLoaded] = useState(false);
-    const [toLoaded, setToLoaded] = useState(false);
-    const [expLoaded, setExpLoaded] = useState(false);
+    const [exp, setExp] = useState(lastFriday());
     const [chartLoaded, setChartLoaded] = useState(false);
     const [searchCriteriaChanged, setSearchCriteriaChanged] = useState(false);
     const [chartDisplayName, setChartDisplayName] = useState('');
     const [oldSymbol, setOldSymbol] = useState('AAPL');
-    const [oldFrom, setOldFrom] = useState('2018-12-27');
-    const [oldTo, setOldTo] = useState('2019-01-31');
-    const [oldExp, setOldExp] = useState('2019-02-22');
+    const [oldFrom, setOldFrom] = useState(aWeekAgo());
+    const [oldTo, setOldTo] = useState(today());
+    const [oldExp, setOldExp] = useState(lastFriday());
     const [oldStrike, setOldStrike] = useState(120);
     const [oldBear, setOldBear] = useState(false);
     const [selectedItem, setSelectedItem] = useState({});
     const [noData, setNoData] = useState(true);
-    const [tooltipPosition, setTooltipPosition] = useState({});
+    const [isAnimationActive, setIsAnimationActive] = useState(true);
+    const [selectedCriteria, setSelectedCriteria] = useState('ask');
 
     const headers = {
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
         Accept: 'application/json',
-      };
+    };
 
     useEffect(() => {
-      if (fromLoaded, toLoaded, expLoaded) {
         fetch('https://diamondhands-express.herokuapp.com/chain', {
             method: 'POST',
             headers: headers,
@@ -190,12 +237,39 @@ export default function ChartContainer(props) {
             if (json.length !== 0) {
               setSelectedItem(Object.keys(json[json.length-1]).length === 0 ? json[json.length-2] : json[json.length-1]);
             }
+            setIsAnimationActive(true)
           });
-      }
-    }, [fromLoaded, toLoaded, expLoaded]);
+    }, []);
 
     useEffect(() => {
-      if (fromLoaded && toLoaded && expLoaded &&
+
+      const newLine = data.filter((siv) => {
+        return siv['Item'] ? true : false
+      })
+      .map((d, index) => {
+        let retY;
+        if (selectedCriteria==='delta') retY = d['Item']['OptionGreeks'][selectedCriteria];
+        if (selectedCriteria==='gamma') retY = d['Item']['OptionGreeks'][selectedCriteria];
+        if (selectedCriteria==='theta') retY = d['Item']['OptionGreeks'][selectedCriteria];
+        if (selectedCriteria==='rho') retY = d['Item']['OptionGreeks'][selectedCriteria];
+        if (selectedCriteria==='vega') retY = d['Item']['OptionGreeks'][selectedCriteria];
+        if (selectedCriteria==='iv') retY = d['Item']['OptionGreeks'][selectedCriteria];
+        if (selectedCriteria==='ask') retY = d['Item'][selectedCriteria];
+        if (selectedCriteria==='bid') retY = d['Item'][selectedCriteria];
+        if (selectedCriteria==='oi') retY = d['Item']['openInterest'];
+        if (selectedCriteria==='volume') retY = d['Item'][selectedCriteria];
+
+        return {x:d['Item'].date, y:retY}
+      })
+
+      console.log(data)
+
+      setCurrentData([...newLine]);
+
+    },[data, selectedCriteria]);
+
+    useEffect(() => {
+      if (
          (symbol !== oldSymbol ||
          strike !== oldStrike ||
          from !== oldFrom ||
@@ -208,33 +282,6 @@ export default function ChartContainer(props) {
         setSearchCriteriaChanged(false)
       }
     },[symbol,strike,from,to,exp,bear])
-
-    useEffect(() => {
-      fetch('https://diamondhands-express.herokuapp.com/valid_dates', {
-        method: 'POST',
-        headers: headers,
-      }).then(res => res.json())
-      .then(json => {
-          setValidDates(json);
-          setFrom(json[json.length-8]);
-          setOldFrom(json[json.length-8]);
-          setFromLoaded(true);
-          setTo(json[json.length-1]);
-          setOldTo(json[json.length-1]);
-          setToLoaded(true);
-          let fridayIndex = 1;
-          for (let i=1;i<9;i++) {
-            // sometimes getDay is zero indexed, sometimes its not, fuck me right?
-            if (new Date(json[json.length-i]).getDay() === 4) {
-              fridayIndex = i;
-              break;
-            }
-          };
-          setExp(json[json.length-fridayIndex]);
-          setOldExp(json[json.length-fridayIndex]);
-          setExpLoaded(true);
-      });
-    }, []);
 
     const search = () => {
       setSearchCriteriaChanged(false);
@@ -269,6 +316,7 @@ export default function ChartContainer(props) {
           setSelectedItem(Object.keys(json[json.length-1]).length === 0 ? json[json.length-2] : json[json.length-1]);
         }
         setOldExp(exp);
+        setIsAnimationActive(true)
       });
     }
 
@@ -335,43 +383,82 @@ export default function ChartContainer(props) {
       );
     }
 
+    const parseLabel = (l) => {
+      switch(l) {
+        case 'delta':
+            return '\u0394'
+        case 'gamma':
+          return '\u0393'
+        case 'theta':
+          return '\u0398'
+        case 'rho':
+          return '\u03A1'
+        case 'vega':
+          return '♥️'
+        case 'volume':
+          return 'vol'
+        default:
+          return l
+      }
+    }
+
+    const parseValue = (l,i) => {
+      switch(l) {
+        case 'delta':
+        case 'gamma':
+        case 'theta':
+        case 'rho':
+        case 'vega':
+        case 'iv':
+          return i.Item.OptionGreeks[l]
+        case 'volume':
+        case 'ask':
+        case 'bid':
+          return i.Item[l]
+        case 'oi':
+          return i.Item.openInterest
+      }
+    }
+
     const GreekElems = () => {
+      const criteria = ['ask','bid','delta','gamma','theta','rho','vega','iv','oi','volume'];
       if(selectedItem && selectedItem.Item && selectedItem.Item.OptionGreeks) {
-        const ret = [
-        <span className={classes.greeksData} ><b>&Delta;</b>: {selectedItem.Item.OptionGreeks.delta}</span>,
-        <span className={classes.greeksData}><b>&Gamma;</b>: {selectedItem.Item.OptionGreeks.gamma}</span>,
-        <span className={classes.greeksData}><b>&Theta;</b>: {selectedItem.Item.OptionGreeks.theta}</span>,
-        <span className={classes.greeksData}><b>&Rho;</b>: {selectedItem.Item.OptionGreeks.rho}</span>,
-        <span className={classes.greeksData}><b>Vega</b>: {selectedItem.Item.OptionGreeks.vega}</span>,
-        <span className={classes.greeksData}><b>IV</b>: {selectedItem.Item.OptionGreeks.iv}</span>,
-        <span className={classes.greeksData}><b>Date</b>: {selectedItem.Item.date}</span>,
-        <span className={classes.greeksData}><b>Ask</b>: {selectedItem.Item.ask}</span>,
-        <span className={classes.greeksData}><b>Bid</b>: {selectedItem.Item.bid}</span>,
-        <span className={classes.greeksData}><b>OI</b>: {selectedItem.Item.openInterest}</span>,
-        <span className={classes.greeksData}><b>Volume</b>: {selectedItem.Item.volume}</span>,
-        ]
-        return ret
+        const ret = []
+        criteria.forEach(c => {
+          ret.push(
+            <div className={classes.greeksDataChipContainer}>
+              <Chip 
+                className={classes.greeksData}
+                label={parseLabel(c)} 
+                color= {selectedCriteria === c ? 'primary' : 'secondary'}
+                onClick={() => {
+                  setSelectedCriteria(c);
+                  setIsAnimationActive(true);
+                }}
+              ></Chip>
+              <p className={classes.greeksDataLabel}>{parseValue(c,selectedItem)}</p>
+            </div>
+          )
+        })
+
+        ret.unshift(
+          <div className={classes.greeksDataChipContainer}>
+            <Chip 
+              className={classes.greeksData}
+              label={selectedItem.Item.date} 
+              color='#f2f2f2'
+            ></Chip>
+            {/* <p className={classes.greeksDataLabel}>{parseValue(c,selectedItem)}</p> */}
+          </div>
+        )
+
+        return ret;
       }
       return []
     }
 
-
     function SymbolChart(props) {
 
-      const dataMemo = React.useMemo(
-        () => 
-          
-            props.data.filter((siv) => {
-              return siv['Item'] ? true : false
-            })
-            .map((d, index) => {
-              return {x:d['Item'].date, $:d['Item'].bid}
-            })
-
-        ,
-        [...props.data]
-      )
-     
       const onClick = (datum) => {
         if (datum && datum.payload && datum.payload.x) {
           setSelectedItem(data.find(x => x.Item.date === datum.payload.x));
@@ -387,9 +474,13 @@ export default function ChartContainer(props) {
           
             {noData ? <div className={classes.noData}>No Data</div> :
           <ResponsiveContainer height='100%' width='100%'>
-            <LineChart margin={{right: 40}} data={dataMemo}>
-              <Line type="monotone" dataKey="$" stroke="#8884d8"/>
-              {/* <CartesianGrid stroke="#ccc" /> */}
+            <LineChart margin={{right: 40, top: 10}} data={currentData}>
+              <Line type="monotone"
+                dataKey= 'y'
+                stroke="#ff9933" 
+                isAnimationActive={isAnimationActive}
+                onAnimationEnd={() => { setIsAnimationActive(false) }}
+              />
               <XAxis 
                 tick={{fontSize: '2vh'}}
                 dataKey="x" 
@@ -398,13 +489,19 @@ export default function ChartContainer(props) {
                   return split[1] + '-' + split[2]
                 }}
                 width={'110%'}
+                stroke='#f2f2f2'
               />
-              <YAxis />
+              <YAxis 
+                stroke='#f2f2f2' 
+                tick={{fontSize: '2vh'}}
+                domain={[0, 'dataMax']}
+              />
               <Tooltip 
                 customCallback={onClick}
                 content={<CustomTooltip/>} 
                 position={{ x: 'auto', y: 0 }}
                 offset={0}
+                contentStyle={{ backgroundColor: '#666666', color: '#f2f2f2'}}
               />
               </LineChart>
           </ResponsiveContainer>}
@@ -429,7 +526,7 @@ export default function ChartContainer(props) {
               }
             <div className={classes.criteriaContainer}>
               <div className={classes.criteriaItem}>
-                <InputLabel style={{fontSize: '.75rem'}} id="label">Symbol</InputLabel>
+                <InputLabel style={{fontSize: '.75rem',color:'#f2f2f2'}} id="label">Symbol</InputLabel>
                 <Select labelId="label"
                   id="symbol-select"
                   open={symbolOpen}
@@ -437,13 +534,19 @@ export default function ChartContainer(props) {
                   onOpen={handleSymbolOpen}
                   value={symbol}
                   onChange={handleSymbolChange}
-                  style={{fontSize: '3vh'}}
+                  style={{fontSize: '3vh',color:'#f2f2f2'}}
+                  MenuProps={{
+                    classes: {
+                      paper: classes.customSelect
+                    }
+                  }}
                 >
-                  <MenuItem value="AAPL">AAPL</MenuItem>
+                  <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="AAPL">AAPL</MenuItem>
                 </Select>
               </div>
               <div className={classes.criteriaItem}>
-                {fromLoaded &&
+                {
+                  // fromLoaded &&
                 <KeyboardDatePicker
                   disableToolbar
                   variant="dialog"
@@ -454,8 +557,8 @@ export default function ChartContainer(props) {
                   value={from}
                   autoOk
                   onChange={handleFromChange}
-                  maxDate={validDates[validDates.length-1]}
-                  minDate={validDates[0]}
+                  maxDate={today()}
+                  minDate={'2018-12-27'}
                   allowKeyboardControl={true}
                   initialFocusedDate={from}
                   InputProps={{ className: classes.textInput }}
@@ -463,7 +566,8 @@ export default function ChartContainer(props) {
                 }
               </div>
               <div className={classes.criteriaItem}>
-                {toLoaded &&
+                {
+                  // toLoaded &&
                 <KeyboardDatePicker
                   disableToolbar
                   variant="dialog"
@@ -474,7 +578,7 @@ export default function ChartContainer(props) {
                   value={to}
                   autoOk
                   onChange={handleToChange}
-                  maxDate={validDates[validDates.length-1]}
+                  maxDate={today()}
                   minDate={from}
                   allowKeyboardControl={true}
                   initialFocusedDate={from}
@@ -483,7 +587,8 @@ export default function ChartContainer(props) {
                 }
               </div>
               <div className={classes.criteriaItem}>
-                {expLoaded &&
+                {
+                  // expLoaded &&
                 <KeyboardDatePicker
                   disableToolbar
                   variant="dialog"

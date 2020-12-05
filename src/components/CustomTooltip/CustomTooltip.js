@@ -33,7 +33,6 @@ const CustomTooltip = props => {
     // we render the default, but with our overridden payload
     const customTooltip = (
     <div style={{pointerEvents: 'auto'}}onClick={() => {
-        console.log(props);
         props.customCallback(tooltipDate[0])
     }}
     >
