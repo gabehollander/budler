@@ -170,8 +170,7 @@ export default function ChartContainer(props) {
       let d = new Date();
       // sometimes getDay is zero indexed, sometimes its not, fuck me right?
       d.setDate(d.getDate() - i)
-      console.log(d)
-      if ((d.getDay() === 4) && i!==0) {
+      if ((d.getDay() === 5) && i!==0) {
         return d.toISOString().slice(0, 10);
       }
     };
@@ -448,7 +447,6 @@ export default function ChartContainer(props) {
               label={selectedItem.Item.date} 
               color='#f2f2f2'
             ></Chip>
-            {/* <p className={classes.greeksDataLabel}>{parseValue(c,selectedItem)}</p> */}
           </div>
         )
 
@@ -541,6 +539,7 @@ export default function ChartContainer(props) {
                     }
                   }}
                 >
+                  <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="SPY">SPY</MenuItem>
                   <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="AAPL">AAPL</MenuItem>
                 </Select>
               </div>
