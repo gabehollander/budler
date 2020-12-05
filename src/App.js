@@ -74,7 +74,8 @@ function App() {
               width: '100%',
               position: 'absolute',
               textAlign: 'center',
-              top: '45%'
+              top: '45%',
+              color: '#f2f2f2'
             }}
             >Please rotate your device</p>
           </div>
