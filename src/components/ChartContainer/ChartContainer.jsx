@@ -94,10 +94,10 @@ const useStyles = makeStyles(theme => ({
     },
     greeksGrid: {
       display: '-webkit-box',
-      height: '20%',
+      height: '18%',
       width: '70%',
       position: 'absolute',
-      bottom: '0',
+      bottom: '1%',
       right: '5%',
       textAlign: 'center',
       overflow: 'scroll',
@@ -141,7 +141,7 @@ const useStyles = makeStyles(theme => ({
     greeksDataChipContainer: {
       width: '20%',
       margin: '0 1%',
-      marginTop: '3%',
+      marginTop: '2%',
     },
     greeksDataLabel: {
       margin:'0',
@@ -168,10 +168,11 @@ export default function ChartContainer(props) {
   const lastFriday = () => {
     for (let i=0;i<8;i++) {
       let d = new Date();
-      // sometimes getDay is zero indexed, sometimes its not, fuck me right?
-      d.setDate(d.getDate() - i)
-      if ((d.getDay() === 5) && i!==0) {
-        return d.toISOString().slice(0, 10);
+      const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
+      const nd = new Date(utc + (3600000*-4));
+      nd.setDate(nd.getDate() - i)
+      if ((nd.getDay() === 5) && i!==0) {
+        return nd.toISOString().slice(0, 10);
       }
     };
   }
@@ -654,3 +655,5 @@ export default function ChartContainer(props) {
         )
     )
 }
+// export default React.memo(ChartContainer)
+
