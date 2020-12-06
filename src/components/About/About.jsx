@@ -45,7 +45,7 @@ export default function About(props) {
             <br/><br/>
             If you're looking for the prime rib, <a href="https://www.cboe.com/">CBOE</a> runs the data racket.
             Needless to say, it is very expensive, depending on what you want.
-            For example, a <a href="https://datashop.cboe.com/option-trades-subscription">subscription</a> to a daily dump of tick level options data, on all symbols, it's 6K billed annually.
+            For example, a <a href="https://datashop.cboe.com/option-trades-subscription">subscription</a> to a daily dump of tick level options data, on all symbols, is 6K billed annually.
             For <a href="https://datashop.cboe.com/option-trades">all</a> tick level data since 2005, on all symbols, is a <i>measly</i> 30K one time charge.
             <br/><br/>
             Right now, this website costs like 3 bucks a month to run, a couple grandmas on internet explorer could probably take it down.
