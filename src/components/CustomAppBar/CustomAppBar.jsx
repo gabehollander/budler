@@ -57,7 +57,7 @@ export default function CustomAppBar(props) {
             backgroundColor: '#262626',
             width: '10%',
             position: 'absolute',
-            right: '0',
+            right: '1%',
             borderRadius: '8px',
             clipPath: 'inset(8vh -5px -5px -5px)',
             display: 'flex',
