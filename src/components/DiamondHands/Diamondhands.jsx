@@ -82,8 +82,8 @@ export default function Diamondhands(props) {
                 <Orientation orientation='portrait' alwaysRender={false}>
                     <div>
                     <p style={{
-                        height: '100%',
-                        width: '100%',
+                        height: '100vh',
+                        width: '100vw',
                         position: 'absolute',
                         textAlign: 'center',
                         top: '45%',

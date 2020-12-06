@@ -165,6 +165,27 @@ export default function ChartContainer(props) {
     return formatYmd(d);
   }
 
+  const parseDate = (d) => {
+    const months = {
+      "Jan": '01' ,
+      "Feb": '02',
+      'Mar': "03",
+      'Apr': "04",
+      'May': "05",
+      'Jun': "06",
+      'Jul': "07",
+      'Aug': "08",
+      'Sep': "09",
+      'Oct': "10",
+      'Nov': "11",
+      'Dec': "12"
+  }
+    //Fri Dec 04 2020 19:09:15 GMT-0500 (Eastern Standard Time)
+    const split = d.split(' ');
+    return split[3]+'-'+months[split[1]]+'-'+split[2]
+
+  }
+
   const lastFriday = () => {
     for (let i=0;i<8;i++) {
       let d = new Date();
@@ -172,7 +193,7 @@ export default function ChartContainer(props) {
       const nd = new Date(utc + (3600000*-4));
       nd.setDate(nd.getDate() - i)
       if ((nd.getDay() === 5) && i!==0) {
-        return nd.toISOString().slice(0, 10);
+        return parseDate(nd.toString());
       }
     };
   }
