@@ -34,7 +34,7 @@ export default function About(props) {
     return (
         <Paper className={classes.container} elevation={3}>
 
-            <h1>Welcome to diamondhands.trade! 💎🙌</h1>
+            <h1>Welcome to <br/>diamondhands.trade! 💎🙌</h1>
             <p className={classes.p}>
             This website charts historical data for <a href="https://en.wikipedia.org/wiki/Option_(finance)">stock options</a>.
             <br/><br/>
