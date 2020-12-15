@@ -560,6 +560,7 @@ export default function ChartContainer(props) {
                     }
                   }}
                 >
+                  <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="VXX">VXX</MenuItem>
                   <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="TSLA">TSLA</MenuItem>
                   <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="T">T</MenuItem>
                   <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="SPY">SPY</MenuItem>
