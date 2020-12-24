@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper';
 import { format } from 'date-fns';
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip} from 'recharts';
+import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, ReferenceArea} from 'recharts';
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
 import {
   MuiPickersUtilsProvider,
@@ -10,6 +10,7 @@ import {
 import 'date-fns';
 import MomentUtils from '@date-io/moment';
 import CriteriaContainer from '../CriteriaContainer/CriteriaContainer';
+import './ChartContainer.css';
 
 const useStyles = makeStyles(theme => ({
     gridContainer: {
@@ -165,7 +166,7 @@ export default function ChartContainer(props) {
     const [data, setData] = useState([]);
     const [currentData, setCurrentData] = useState([]);
     const [symbol, setSymbol] = useState('AAPL');
-    const [from, setFrom] = useState('2018/12/28'); //useState(aWeekAgo())
+    const [from, setFrom] = useState('2018-12-28'); //useState(aWeekAgo())
     const [to, setTo] = useState(today());
     const [strike, setStrike] = useState(120);
     const [bear, setBear] = useState(false);
@@ -174,7 +175,7 @@ export default function ChartContainer(props) {
     const [searchCriteriaChanged, setSearchCriteriaChanged] = useState(false);
     const [chartDisplayName, setChartDisplayName] = useState('');
     const [oldSymbol, setOldSymbol] = useState('AAPL');
-    const [oldFrom, setOldFrom] = useState(aWeekAgo());
+    const [oldFrom, setOldFrom] = useState('2018-12-28');
     const [oldTo, setOldTo] = useState(today());
     const [oldExp, setOldExp] = useState(lastFriday());
     const [oldStrike, setOldStrike] = useState(120);
@@ -184,6 +185,15 @@ export default function ChartContainer(props) {
     const [isAnimationActive, setIsAnimationActive] = useState(true);
     const [selectedCriteria1, setSelectedCriteria1] = useState('ask');
     const [selectedCriteria2, setSelectedCriteria2] = useState('bid');
+
+    const [left, setLeft] = useState('dataMin');
+    const [right, setRight] = useState('dataMin');
+    const [refAreaLeft, setRefAreaLeft] = useState('dataMin');
+    const [refAreaRight, setRefAreaRight] = useState('dataMin');
+    const [top, setTop] = useState('dataMax+1');
+    const [bottom, setBottom] = useState('dataMin-1');
+    const [top2, setTop2] = useState('dataMax+1');
+    const [bottom2, setBottom2] = useState('dataMin-1');
 
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -258,7 +268,7 @@ export default function ChartContainer(props) {
         return {x:d['Item'].date, y1:retY1, y2:retY2}
       })
 
-      setCurrentData([...newLine]);
+      setCurrentData(newLine);
 
     },[data, selectedCriteria1, selectedCriteria2]);
 
@@ -274,6 +284,15 @@ export default function ChartContainer(props) {
         setSearchCriteriaChanged(false)
       }
     },[symbol,strike,exp,bear])
+
+    useEffect(() => {
+      if (
+        (oldFrom && (oldFrom !== from)) ||
+        (oldTo && (oldTo !== to))
+        ) {
+        search()
+      } 
+    },[from,to])
 
     const search = () => {
       setSearchCriteriaChanged(false);
@@ -411,6 +430,63 @@ export default function ChartContainer(props) {
           setSelectedItem(data.find(x => x.Item.date === datum.payload.x));
         }
       }
+
+      const getAxisYDomain = (from, to, ref, offset) => {
+        const fromIdx = currentData.findIndex(e => {return e.x === from});
+        const toIdx = currentData.findIndex(e => {return e.x === to});
+        const refData = currentData.slice(fromIdx, toIdx);
+        let [ bottom, top ] = [ refData[0][ref], refData[0][ref] ];
+        refData.forEach( d => {
+          if ( d[ref] > top ) top = d[ref];
+          if ( d[ref] < bottom ) bottom = d[ref];
+        });
+        
+        return [ (bottom|0) - offset, (top|0) + offset ]
+      };
+
+      const zoom = () => {     
+        if ( refAreaLeft === refAreaRight || refAreaRight === '' ) {
+          setRefAreaLeft('');
+          setRefAreaRight('');
+          return;
+        }
+    
+        // xAxis domain
+        if ( refAreaLeft > refAreaRight ) {
+          const tempLeft = refAreaLeft.slice();
+          const tempRight = refAreaRight.slice();
+          setRefAreaLeft(tempRight);
+          setRefAreaRight(tempLeft);
+        }    
+
+        // yAxis domain
+        const [ tempBottom, tempTop ] = getAxisYDomain( refAreaLeft, refAreaRight, 'y1', 1 );
+        const [ tempBottom2, tempTop2 ] = getAxisYDomain( refAreaLeft, refAreaRight, 'y2', 1 );
+        
+        setRefAreaLeft('');
+        setRefAreaRight('');
+        setFrom(refAreaLeft);
+        setOldFrom(from);
+        setTo(refAreaRight);
+        setOldTo(to);
+        setBottom(tempBottom);
+        setTop(tempTop);
+        setBottom2(tempBottom2);
+        setTop2(tempTop2);
+      };
+
+      const zoomOut = () => {
+        setRefAreaLeft('');
+        setRefAreaRight('');
+        setFrom('dataMin');
+        setOldFrom(from);
+        setTo('dataMax');
+        setOldTo(to);
+        setBottom('dataMin');
+        setTop('dataMax');
+        setBottom2('dataMin');
+        setTop2('dataMax');
+      }
     
      return (
 
@@ -421,7 +497,12 @@ export default function ChartContainer(props) {
           
             {noData ? <div className={classes.noData}>No Data</div> :
           <ResponsiveContainer className={classes.responsiveContainer} height='100%' width='95%'>
-            <LineChart  data={currentData}>
+            <LineChart  
+              data={currentData}
+              onMouseDown = { (e) => {if (e && e.activeLabel) setRefAreaLeft(e.activeLabel)} }
+              onMouseMove = { (e) => refAreaLeft && setRefAreaRight(e.activeLabel) }
+              onMouseUp = { zoom }
+            >
               <Line type="monotone"
                 dataKey= 'y1'
                 yAxisId= 'y1'
@@ -443,9 +524,8 @@ export default function ChartContainer(props) {
                   const split = d.split('-');
                   return split[1] + '-' + split[2]
                 }}
-                width={'110%'}
                 stroke='#f2f2f2'
-                
+                domain={[from, to]}
               />
               <YAxis 
                 yAxisId= "y1"
@@ -455,9 +535,10 @@ export default function ChartContainer(props) {
                 domain={[0, 'dataMax']}
                 angle={-45}
                 tickFormatter={(d) => {
-                  if (d === 0) return '';
+                  // if (d === 0) return '';
                   return d.toString().slice(0,7)
                 }}
+                domain={[bottom, top]}
               />
               <YAxis
                 yAxisId= "y2"
@@ -470,7 +551,11 @@ export default function ChartContainer(props) {
                   if (d === 0) return '';
                   return d.toString().slice(0,7)
                 }}
+                domain={[bottom2, top2]}
               />
+              {(refAreaLeft && refAreaRight) ? (
+              <ReferenceArea yAxisId="y1" x1={refAreaLeft} x2={refAreaRight}  strokeOpacity={0.3} /> ) : null
+              }
               <Tooltip 
                 customCallback={onClick}
                 content={<CustomTooltip/>} 
@@ -480,10 +565,7 @@ export default function ChartContainer(props) {
               />
               </LineChart>
           </ResponsiveContainer>}
-
-
       </div>
-            
       )
     }
 
