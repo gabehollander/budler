@@ -36,6 +36,11 @@ const theme = createMuiTheme({
           color: '#f2f2f2'
         }
       },
+      MuiInputBase: {
+        input: {
+          color: '#f2f2f2'
+        }
+      },
       // Style sheet name ⚛️
       MuiInputLabel: {
         // Name of the rule
@@ -44,6 +49,7 @@ const theme = createMuiTheme({
           color: '#f2f2f2',
         },
       },
+
     },
     palette: {
       primary: {
@@ -51,6 +57,9 @@ const theme = createMuiTheme({
       },
       secondary: {
         main: '#666666'
+      },
+      action: {
+        disabledBackground: '#f2f2f2'
       }
     }
 });

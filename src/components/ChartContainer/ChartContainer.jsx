@@ -1,26 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 import { format } from 'date-fns';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip} from 'recharts';
 import CustomTooltip from '../CustomTooltip/CustomTooltip';
-import Chip from '@material-ui/core/Chip';
-
 import {
   MuiPickersUtilsProvider,
-  KeyboardDatePicker,
 } from '@material-ui/pickers';
 import 'date-fns';
 import MomentUtils from '@date-io/moment';
-import { Typography } from '@material-ui/core';
-
+import CriteriaContainer from '../CriteriaContainer/CriteriaContainer';
 
 const useStyles = makeStyles(theme => ({
     gridContainer: {
@@ -35,46 +24,22 @@ const useStyles = makeStyles(theme => ({
       color: '#f2f2f2'
     },
     chart: {
-      width: '80%',
-      height: '67%',
+      width: '100%',
+      height: '80%',
       paddingTop: '1%',
       position: 'absolute',
-      right: '0%',
       // backgroundColor: '#132c53'
-    },
-    criteriaContainer: {
-      display: '-webkit-box',   /* OLD - iOS 6-, Safari 3.1-6, BB7 */
-      display: '-ms-flexbox',  /* TWEENER - IE 10 */
-      display: '-webkit-flex', /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
-      display: 'flex', 
-      flexDirection: 'column',
-      position: 'absolute',
-      top: '1%',
-      left: '1%',
-      overflow: 'scroll',
-      width: '20%',
-      height: '75%',
-      justifyContent: 'space-between',
-      border: 'solid 1px #f2f2f2',
-      borderRadius: '4px',
-      paddingLeft: '1%',
-      paddingTop: '1%',
-      maxWidth: '238px',
+      // paddingLeft: '4%'
     },
     criteriaItem:{
       height: 'max-content',
       width: '95%',
       color: '#f2f2f2'
     },
-    searchButton: {
-      position: 'absolute',
-      bottom: '2%',
-      left: '1%'
-    },
     chartDisplayName: {
       textAlign: 'center',
       fontSize: '7vh',
-      marginLeft: '7%',
+      // marginLeft: '7%',
       color: '#f2f2f2'
     },
     textInput: {
@@ -82,14 +47,6 @@ const useStyles = makeStyles(theme => ({
       "& .MuiIconButton-root": {
         paddingLeft: 0
       },
-      color: '#f2f2f2'
-    },
-    labelPlacementTop: {
-      alignItems: 'normal',
-      margin: '4% 0'
-    },
-    bearInputLabel: {
-      fontSize: '.75rem',
       color: '#f2f2f2'
     },
     greeksGrid: {
@@ -147,6 +104,12 @@ const useStyles = makeStyles(theme => ({
       margin:'0',
       color: '#f2f2f2',
       fontSize: '2vh',
+    },
+    disabledButton: {
+      backgroundColor: 'grey'
+    },
+    responsiveContainer: {
+      margin: 'auto',
     }
 
 }))
@@ -202,8 +165,7 @@ export default function ChartContainer(props) {
     const [data, setData] = useState([]);
     const [currentData, setCurrentData] = useState([]);
     const [symbol, setSymbol] = useState('AAPL');
-    const [symbolOpen, setSymbolOpen] = useState(false);
-    const [from, setFrom] = useState(aWeekAgo());
+    const [from, setFrom] = useState('2018/12/28'); //useState(aWeekAgo())
     const [to, setTo] = useState(today());
     const [strike, setStrike] = useState(120);
     const [bear, setBear] = useState(false);
@@ -220,7 +182,8 @@ export default function ChartContainer(props) {
     const [selectedItem, setSelectedItem] = useState({});
     const [noData, setNoData] = useState(true);
     const [isAnimationActive, setIsAnimationActive] = useState(true);
-    const [selectedCriteria, setSelectedCriteria] = useState('ask');
+    const [selectedCriteria1, setSelectedCriteria1] = useState('ask');
+    const [selectedCriteria2, setSelectedCriteria2] = useState('bid');
 
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -268,33 +231,41 @@ export default function ChartContainer(props) {
         return siv['Item'] ? true : false
       })
       .map((d, index) => {
-        let retY;
-        if (selectedCriteria==='delta') retY = d['Item']['OptionGreeks'][selectedCriteria];
-        if (selectedCriteria==='gamma') retY = d['Item']['OptionGreeks'][selectedCriteria];
-        if (selectedCriteria==='theta') retY = d['Item']['OptionGreeks'][selectedCriteria];
-        if (selectedCriteria==='rho') retY = d['Item']['OptionGreeks'][selectedCriteria];
-        if (selectedCriteria==='vega') retY = d['Item']['OptionGreeks'][selectedCriteria];
-        if (selectedCriteria==='iv') retY = d['Item']['OptionGreeks'][selectedCriteria];
-        if (selectedCriteria==='ask') retY = d['Item'][selectedCriteria];
-        if (selectedCriteria==='bid') retY = d['Item'][selectedCriteria];
-        if (selectedCriteria==='oi') retY = d['Item']['openInterest'];
-        if (selectedCriteria==='volume') retY = d['Item'][selectedCriteria];
+        let retY1;
+        let retY2;
+        if (selectedCriteria1==='delta') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
+        if (selectedCriteria1==='gamma') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
+        if (selectedCriteria1==='theta') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
+        if (selectedCriteria1==='rho') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
+        if (selectedCriteria1==='vega') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
+        if (selectedCriteria1==='iv') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
+        if (selectedCriteria1==='ask') retY1 = d['Item'][selectedCriteria1];
+        if (selectedCriteria1==='bid') retY1 = d['Item'][selectedCriteria1];
+        if (selectedCriteria1==='oi') retY1 = d['Item']['openInterest'];
+        if (selectedCriteria1==='volume') retY1 = d['Item'][selectedCriteria1];
 
-        return {x:d['Item'].date, y:retY}
+        if (selectedCriteria2==='delta') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
+        if (selectedCriteria2==='gamma') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
+        if (selectedCriteria2==='theta') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
+        if (selectedCriteria2==='rho') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
+        if (selectedCriteria2==='vega') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
+        if (selectedCriteria2==='iv') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
+        if (selectedCriteria2==='ask') retY2 = d['Item'][selectedCriteria2];
+        if (selectedCriteria2==='bid') retY2 = d['Item'][selectedCriteria2];
+        if (selectedCriteria2==='oi') retY2 = d['Item']['openInterest'];
+        if (selectedCriteria2==='volume') retY2 = d['Item'][selectedCriteria2];
+
+        return {x:d['Item'].date, y1:retY1, y2:retY2}
       })
-
-      console.log(data)
 
       setCurrentData([...newLine]);
 
-    },[data, selectedCriteria]);
+    },[data, selectedCriteria1, selectedCriteria2]);
 
     useEffect(() => {
       if (
          (symbol !== oldSymbol ||
          strike !== oldStrike ||
-         from !== oldFrom ||
-         to !== oldTo ||
          exp !== oldExp ||
          bear !== oldBear)
       ) {
@@ -302,7 +273,7 @@ export default function ChartContainer(props) {
       } else {
         setSearchCriteriaChanged(false)
       }
-    },[symbol,strike,from,to,exp,bear])
+    },[symbol,strike,exp,bear])
 
     const search = () => {
       setSearchCriteriaChanged(false);
@@ -345,14 +316,6 @@ export default function ChartContainer(props) {
       if (symbol !== event.target.value) {
         setSymbol(event.target.value);
       }
-    };
-  
-    const handleSymbolClose = () => {
-      setSymbolOpen(false);
-    };
-  
-    const handleSymbolOpen = () => {
-      setSymbolOpen(true);
     };
 
     const handleFromChange = event => {
@@ -441,41 +404,6 @@ export default function ChartContainer(props) {
       }
     }
 
-    const GreekElems = () => {
-      const criteria = ['ask','bid','delta','gamma','theta','rho','vega','iv','oi','volume'];
-      if(selectedItem && selectedItem.Item && selectedItem.Item.OptionGreeks) {
-        const ret = []
-        criteria.forEach(c => {
-          ret.push(
-            <div className={classes.greeksDataChipContainer}>
-              <Chip 
-                className={classes.greeksData}
-                label={parseLabel(c)} 
-                color= {selectedCriteria === c ? 'primary' : 'secondary'}
-                onClick={() => {
-                  setSelectedCriteria(c);
-                  setIsAnimationActive(true);
-                }}
-              ></Chip>
-              <p className={classes.greeksDataLabel}>{parseValue(c,selectedItem)}</p>
-            </div>
-          )
-        })
-
-        ret.unshift(
-          <div className={classes.greeksDataChipContainer}>
-            <Chip 
-              className={classes.greeksData}
-              label={selectedItem.Item.date} 
-            ></Chip>
-          </div>
-        )
-
-        return ret;
-      }
-      return []
-    }
-
     function SymbolChart(props) {
 
       const onClick = (datum) => {
@@ -492,11 +420,19 @@ export default function ChartContainer(props) {
           </div>
           
             {noData ? <div className={classes.noData}>No Data</div> :
-          <ResponsiveContainer height='100%' width='100%'>
-            <LineChart margin={{right: 40, top: 10}} data={currentData}>
+          <ResponsiveContainer className={classes.responsiveContainer} height='100%' width='95%'>
+            <LineChart  data={currentData}>
               <Line type="monotone"
-                dataKey= 'y'
+                dataKey= 'y1'
+                yAxisId= 'y1'
                 stroke="#ff9933" 
+                isAnimationActive={isAnimationActive}
+                onAnimationEnd={() => { setIsAnimationActive(false) }}
+              />
+              <Line type="monotone"
+                dataKey= 'y2'
+                yAxisId= 'y2'
+                stroke="#392bff" 
                 isAnimationActive={isAnimationActive}
                 onAnimationEnd={() => { setIsAnimationActive(false) }}
               />
@@ -509,11 +445,31 @@ export default function ChartContainer(props) {
                 }}
                 width={'110%'}
                 stroke='#f2f2f2'
+                
               />
               <YAxis 
+                yAxisId= "y1"
+                orientation="left"
                 stroke='#f2f2f2' 
-                tick={{fontSize: '2vh'}}
+                tick={{fontSize: '2vh', fill: '#ff9933'}}
                 domain={[0, 'dataMax']}
+                angle={-45}
+                tickFormatter={(d) => {
+                  if (d === 0) return '';
+                  return d.toString().slice(0,7)
+                }}
+              />
+              <YAxis
+                yAxisId= "y2"
+                orientation="right"
+                stroke='#f2f2f2' 
+                tick={{fontSize: '2vh', fill: '#392bff'}}
+                domain={[0, 'dataMax']}
+                angle={45}
+                tickFormatter={(d) => {
+                  if (d === 0) return '';
+                  return d.toString().slice(0,7)
+                }}
               />
               <Tooltip 
                 customCallback={onClick}
@@ -534,149 +490,34 @@ export default function ChartContainer(props) {
     return (
         (data.length === 0 && !noData ?
         <div className={classes.pageLoading}>Loading...</div> :
-        <MuiPickersUtilsProvider utils={MomentUtils}>
-          <Paper className={classes.gridContainer} elevation={3}>
-              {chartLoaded ?
-                <SymbolChart
-                  chartDisplayName={chartDisplayName}
-                  data={data}
-                ></SymbolChart>:
-                <div className={classes.chartLoading}>Loading...</div>
-              }
-            <div className={classes.criteriaContainer}>
-              <div className={classes.criteriaItem}>
-                <InputLabel style={{fontSize: '.75rem',color:'#f2f2f2'}} id="label">Symbol</InputLabel>
-                <Select labelId="label"
-                  id="symbol-select"
-                  open={symbolOpen}
-                  onClose={handleSymbolClose}
-                  onOpen={handleSymbolOpen}
-                  value={symbol}
-                  onChange={handleSymbolChange}
-                  style={{fontSize: '3vh',color:'#f2f2f2'}}
-                  MenuProps={{
-                    classes: {
-                      paper: classes.customSelect
-                    }
-                  }}
-                >
-                  <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="VXX">VXX</MenuItem>
-                  <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="TSLA">TSLA</MenuItem>
-                  <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="T">T</MenuItem>
-                  <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="SPY">SPY</MenuItem>
-                  <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="AAPL">AAPL</MenuItem>
-                </Select>
-              </div>
-              <div className={classes.criteriaItem}>
-                {
-                  // fromLoaded &&
-                <KeyboardDatePicker
-                  disableToolbar
-                  variant="dialog"
-                  format="yyyy/MM/DD"
-                  margin="normal"
-                  id="from-date-picker-inline"
-                  label="From"
-                  value={from}
-                  autoOk
-                  onChange={handleFromChange}
-                  maxDate={today()}
-                  minDate={'2018-12-27'}
-                  allowKeyboardControl={true}
-                  initialFocusedDate={from}
-                  InputProps={{ className: classes.textInput }}
-                />
+          <MuiPickersUtilsProvider utils={MomentUtils}>
+            <Paper className={classes.gridContainer} elevation={3}>
+                {chartLoaded ?
+                  <SymbolChart
+                    chartDisplayName={chartDisplayName}
+                    data={data}
+                  ></SymbolChart>:
+                  <div className={classes.chartLoading}>Loading...</div>
                 }
-              </div>
-              <div className={classes.criteriaItem}>
-                {
-                  // toLoaded &&
-                <KeyboardDatePicker
-                  disableToolbar
-                  variant="dialog"
-                  format="yyyy/MM/DD"
-                  margin="normal"
-                  id="from-date-picker-inline"
-                  label="To"
-                  value={to}
-                  autoOk
-                  onChange={handleToChange}
-                  maxDate={today()}
-                  minDate={from}
-                  allowKeyboardControl={true}
-                  initialFocusedDate={from}
-                  InputProps={{ className: classes.textInput }}
-                />
-                }
-              </div>
-              <div className={classes.criteriaItem}>
-                {
-                  // expLoaded &&
-                <KeyboardDatePicker
-                  disableToolbar
-                  variant="dialog"
-                  format="yyyy/MM/DD"
-                  margin="normal"
-                  id="from-date-picker-inline"
-                  label="Expiration"
-                  value={exp}
-                  autoOk
-                  onChange={handleExpChange}
-                  // maxDate={none}
-                  minDate={from}
-                  allowKeyboardControl={true}
-                  initialFocusedDate={from}
-                  InputProps={{ className: classes.textInput }}
-                />
-                }
-              </div>
-              <div className={classes.criteriaItem}>
-              <form className={classes.root} noValidate autoComplete="off">
-                <TextField id="standard-basic" 
-                  label="Strike"
-                  defaultValue={strike}
-                  onBlur={handleStrikeChange}
-                  InputProps={{ className: classes.textInput }}
-                />
-              </form>
-              </div>
-              <div className={classes.criteriaItem}>
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={bear}
-                    onChange={() => {
-                      setBear(!bear);
-                    }}
-                    name="bearSwitch"
-                    color="primary"
-                  />
-                }
-                label={<Typography className={classes.bearInputLabel}>Bear?</Typography>}
-                labelPlacement="top"
-                classes={{labelPlacementTop: classes.labelPlacementTop}}
-              />
-              </div>
-            </div>
-            <Button 
-              variant="contained"
-              onClick={search}
-              className={classes.searchButton}
-              disabled={!searchCriteriaChanged}
-              color="primary"
-            >Search
-            </Button>
-            <Paper
-              className={classes.greeks}
-            >
-              <div className={classes.greeksGrid}>
-                {noData ? null : <GreekElems></GreekElems>}
-              </div> 
+                <CriteriaContainer
+                  symbol = {symbol}
+                  handleSymbolChange = {handleSymbolChange}
+                  exp = {exp}
+                  handleExpChange = {handleExpChange}
+                  from = {from}
+                  strike = {strike}
+                  handleStrikeChange = {handleStrikeChange}
+                  bear = {bear}
+                  setBear = {setBear}
+                  selectedCriteria1 = {selectedCriteria1}
+                  selectedCriteria2 = {selectedCriteria2}
+                  setSelectedCriteria1 = {setSelectedCriteria1}
+                  setSelectedCriteria2 = {setSelectedCriteria2}
+                  search = {search}
+                  searchCriteriaChanged = {searchCriteriaChanged}
+                ></CriteriaContainer>
             </Paper>
-          </Paper>
-        </MuiPickersUtilsProvider>
+          </MuiPickersUtilsProvider>
         )
     )
 }
-// export default React.memo(ChartContainer)
-
