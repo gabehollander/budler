@@ -17,6 +17,36 @@ import ListIcon from '@material-ui/icons/List';
 
 const CriteriaContainer = props => {
 
+    const criteria = [	
+        'open',	
+        'high',	
+        'low',	
+        'close',	
+        'trade_volume',
+        'bid_size_1545',
+        'bid_1545',
+        'ask_size_1545',
+        'ask_1545',
+        'underlying_bid_1545',
+        'underlying_ask_1545',
+        'implied_underlying_price_1545',	
+        'active_underlying_price_1545',	
+        'implied_volatility_1545',
+        'delta_1545',
+        'gamma_1545',	
+        'theta_1545',	
+        'vega_1545',	
+        'rho_1545',
+        'bid_size_eod',
+        'bid_eod',	
+        'ask_size_eod',	
+        'ask_eod',	
+        'underlying_bid_eod',	
+        'underlying_ask_eod',	
+        'vwap',
+        'open_interest'
+    ]
+
     const useStyles = makeStyles(theme => ({
         criteriaContainer: {
             backgroundColor: '#262626',
@@ -52,8 +82,8 @@ const CriteriaContainer = props => {
             // border: '1px solid',
             backgroundColor: '#262626',
             borderRadius: '8px',
-            height: '10%',
-            width: '30%',
+            height: '18%',
+            width: '22%',
             position: 'absolute',
             left: '98%',
             top: '1%',
@@ -62,10 +92,11 @@ const CriteriaContainer = props => {
           },
           fixedContainer: {
               position: 'fixed',
-              height: '80%',
+              height: '95%',
               width: '30%',
               left: '0%',
               transition: 'left .5s',
+              top: '1%',
           },
           listIcon: {
             color: '#f2f2f2',
@@ -75,7 +106,7 @@ const CriteriaContainer = props => {
             width: '75%',
           },
           fixedContainerClosed:{
-            left: '-29%',
+            left: '-30%',
           },
           criteriaItem: {
               margin: '2%',
@@ -129,6 +160,9 @@ const CriteriaContainer = props => {
     setRightAxisOpen(true);
     };
 
+    const menuItems = criteria.map(c => {
+        return <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value={c}>{c}</MenuItem>
+    })
 
     return (
     <div className = {`${classes.fixedContainer} ${barOpen ? '' : classes.fixedContainerClosed}`}>
@@ -138,7 +172,15 @@ const CriteriaContainer = props => {
         > <ListIcon className={classes.listIcon} /></Paper>
         <Paper className={classes.criteriaContainer} elevation={4}>
             <div className={classes.criteriaItem}>
-            <InputLabel style={{fontSize: '.75rem',color:'#f2f2f2'}} id="label">Symbol</InputLabel>
+                <form className={classes.root} noValidate autoComplete="off">
+                    <TextField id="standard-basic" 
+                        label="Symbol"
+                        defaultValue={props.symbol}
+                        onBlur={props.handleSymbolChange}
+                        InputProps={{ className: classes.textInput }}
+                    />
+                </form>
+            {/* <InputLabel style={{fontSize: '.75rem',color:'#f2f2f2'}} id="label">Symbol</InputLabel>
             <Select labelId="label"
                 id="symbol-select"
                 open={symbolOpen}
@@ -158,7 +200,7 @@ const CriteriaContainer = props => {
                 <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="T">T</MenuItem>
                 <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="SPY">SPY</MenuItem>
                 <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="AAPL">AAPL</MenuItem>
-            </Select>
+            </Select> */}
             </div>
             <div className={classes.criteriaItem}>
             {
@@ -223,16 +265,7 @@ const CriteriaContainer = props => {
                 }
                 }}
             >
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="ask">Ask</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="bid">Bid</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="delta">Delta</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="gamma">Gamma</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="theta">Theta</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="rho">Rho</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="vega">Vega</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="iv">IV</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="oi">OI</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="volume">Volume</MenuItem>
+                {menuItems}        
             </Select>
             </div>
             <div className={classes.criteriaItem}>
@@ -251,16 +284,8 @@ const CriteriaContainer = props => {
                 }
                 }}
             >
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="ask">Ask</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="bid">Bid</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="delta">Delta</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="gamma">Gamma</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="theta">Theta</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="rho">Rho</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="vega">Vega</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="iv">IV</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="oi">OI</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="volume">Volume</MenuItem>
+                {menuItems}        
+
             </Select>
             </div>
             <div className={classes.criteriaItem}>

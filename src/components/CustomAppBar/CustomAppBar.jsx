@@ -41,7 +41,7 @@ export default function CustomAppBar(props) {
     const useStyles = makeStyles(theme => ({
         appBarOpen:{
             alignItems: 'flex-end',
-            height: '8vh',
+            height: '11vh',
             color: '#f2f2f2',
             backgroundColor: '#262626',
             position: 'fixed',
@@ -53,19 +53,23 @@ export default function CustomAppBar(props) {
             top: '-10%',
         },
         appBarToggle:{
-            height: '18vh',
+            height: '21vh',
             backgroundColor: '#262626',
             width: '10%',
             position: 'absolute',
             right: '1%',
             borderRadius: '8px',
-            clipPath: 'inset(8vh -5px -5px -5px)',
+            clipPath: 'inset(11vh -5px -5px -5px)',
             display: 'flex',
         },
         toggleIcon:{
             margin: 'auto',
             marginBottom: '5%',
-            color: '#f2f2f2'
+            color: '#f2f2f2',
+            fontSize: '10vh'
+        },
+        tabContent: {
+            fontSize: '5vh',
         }
     }))
 
@@ -88,8 +92,8 @@ export default function CustomAppBar(props) {
         <MuiThemeProvider theme={theme}>
             <AppBar className={`${classes.appBarOpen} ${barOpen ? '' : classes.appBarClosed}`} position="static">
                 <Tabs value={props.tabValue} onChange={props.handleTabChange} aria-label="simple tabs example">
-                    <Tab label="Chart"  {...a11yProps(0)} />
-                    <Tab label="About" {...a11yProps(1)} />
+                    <Tab className={classes.tabContent} label="Chart"  {...a11yProps(0)} />
+                    <Tab className={classes.tabContent} label="About" {...a11yProps(1)} />
                 </Tabs>
                 <Paper
                     elevation={4}

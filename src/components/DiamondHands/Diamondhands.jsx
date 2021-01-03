@@ -41,6 +41,12 @@ const theme = createMuiTheme({
           color: '#f2f2f2'
         }
       },
+      recharts: {
+        surface: {
+          height: '105%',
+        }
+      },
+
       // Style sheet name ⚛️
       MuiInputLabel: {
         // Name of the rule

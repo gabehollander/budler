@@ -21,10 +21,14 @@ const CustomTooltip = props => {
     }
     // mutating props directly is against react's conventions
     // so we create a new payload with the name and value fields set to what we want
+    props.payload[0].name = props.y1;
+    props.payload[1].name = props.y2;
+
+
     const newPayload = [
       {
         // all your data which created the tooltip is located in the .payload property
-        value: props.payload[0].payload.name,
+        // value: props.payload[0].payload.name,
         // you can also add "unit" here if you need it
       },
       ...props.payload,

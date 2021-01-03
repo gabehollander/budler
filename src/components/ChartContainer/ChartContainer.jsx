@@ -10,7 +10,10 @@ import {
 import 'date-fns';
 import MomentUtils from '@date-io/moment';
 import CriteriaContainer from '../CriteriaContainer/CriteriaContainer';
-import './ChartContainer.css';
+import MetaDataContainer from '../MetaDataContainer/MetaDataContainer';
+import './ChartContainer.scss';
+import Button from '@material-ui/core/Button';
+import { setRef } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
     gridContainer: {
@@ -89,7 +92,7 @@ const useStyles = makeStyles(theme => ({
       position: 'absolute',
       textAlign: 'center',
       top: '45%',
-      left: '10%'
+      // left: '10%'
     },
     customSelect: {
       "& ul": {
@@ -111,8 +114,20 @@ const useStyles = makeStyles(theme => ({
     },
     responsiveContainer: {
       margin: 'auto',
-    }
-
+    },
+    zoomOutButton: {
+      width: '5%',
+      whiteSpace: 'nowrap',
+      fontSize: '10px',
+      marginRight: '3%',
+    },
+    zoomInButton: {
+      width: '5%',
+      whiteSpace: 'nowrap',
+      fontSize: '10px',
+      marginLeft: '3%',
+      backgroundColor: '#392bff',
+    },
 }))
 
 export default function ChartContainer(props) {
@@ -161,12 +176,12 @@ export default function ChartContainer(props) {
       }
     };
   }
-
+    const minDate = '2020-12-28'
     const classes = useStyles();
     const [data, setData] = useState([]);
     const [currentData, setCurrentData] = useState([]);
     const [symbol, setSymbol] = useState('AAPL');
-    const [from, setFrom] = useState('2018-12-28'); //useState(aWeekAgo())
+    const [from, setFrom] = useState(minDate); //useState(aWeekAgo())
     const [to, setTo] = useState(today());
     const [strike, setStrike] = useState(120);
     const [bear, setBear] = useState(false);
@@ -175,7 +190,7 @@ export default function ChartContainer(props) {
     const [searchCriteriaChanged, setSearchCriteriaChanged] = useState(false);
     const [chartDisplayName, setChartDisplayName] = useState('');
     const [oldSymbol, setOldSymbol] = useState('AAPL');
-    const [oldFrom, setOldFrom] = useState('2018-12-28');
+    const [oldFrom, setOldFrom] = useState(minDate);
     const [oldTo, setOldTo] = useState(today());
     const [oldExp, setOldExp] = useState(lastFriday());
     const [oldStrike, setOldStrike] = useState(120);
@@ -183,17 +198,17 @@ export default function ChartContainer(props) {
     const [selectedItem, setSelectedItem] = useState({});
     const [noData, setNoData] = useState(true);
     const [isAnimationActive, setIsAnimationActive] = useState(true);
-    const [selectedCriteria1, setSelectedCriteria1] = useState('ask');
-    const [selectedCriteria2, setSelectedCriteria2] = useState('bid');
+    const [selectedCriteria1, setSelectedCriteria1] = useState('ask_1545');
+    const [selectedCriteria2, setSelectedCriteria2] = useState('bid_1545');
 
-    const [left, setLeft] = useState('dataMin');
-    const [right, setRight] = useState('dataMin');
-    const [refAreaLeft, setRefAreaLeft] = useState('dataMin');
-    const [refAreaRight, setRefAreaRight] = useState('dataMin');
+    const [refAreaLeft, setRefAreaLeft] = useState('');
+    const [refAreaRight, setRefAreaRight] = useState('');
     const [top, setTop] = useState('dataMax+1');
     const [bottom, setBottom] = useState('dataMin-1');
     const [top2, setTop2] = useState('dataMax+1');
     const [bottom2, setBottom2] = useState('dataMin-1');
+
+    // const [canZoomOut, setCanZoomOut] = useState(false);
 
     const headers = {
         'Access-Control-Allow-Origin': '*',
@@ -241,31 +256,9 @@ export default function ChartContainer(props) {
         return siv['Item'] ? true : false
       })
       .map((d, index) => {
-        let retY1;
-        let retY2;
-        if (selectedCriteria1==='delta') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
-        if (selectedCriteria1==='gamma') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
-        if (selectedCriteria1==='theta') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
-        if (selectedCriteria1==='rho') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
-        if (selectedCriteria1==='vega') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
-        if (selectedCriteria1==='iv') retY1 = d['Item']['OptionGreeks'][selectedCriteria1];
-        if (selectedCriteria1==='ask') retY1 = d['Item'][selectedCriteria1];
-        if (selectedCriteria1==='bid') retY1 = d['Item'][selectedCriteria1];
-        if (selectedCriteria1==='oi') retY1 = d['Item']['openInterest'];
-        if (selectedCriteria1==='volume') retY1 = d['Item'][selectedCriteria1];
-
-        if (selectedCriteria2==='delta') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
-        if (selectedCriteria2==='gamma') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
-        if (selectedCriteria2==='theta') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
-        if (selectedCriteria2==='rho') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
-        if (selectedCriteria2==='vega') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
-        if (selectedCriteria2==='iv') retY2 = d['Item']['OptionGreeks'][selectedCriteria2];
-        if (selectedCriteria2==='ask') retY2 = d['Item'][selectedCriteria2];
-        if (selectedCriteria2==='bid') retY2 = d['Item'][selectedCriteria2];
-        if (selectedCriteria2==='oi') retY2 = d['Item']['openInterest'];
-        if (selectedCriteria2==='volume') retY2 = d['Item'][selectedCriteria2];
-
-        return {x:d['Item'].date, y1:retY1, y2:retY2}
+        let retY1 = d['Item'][selectedCriteria1];
+        let retY2 = d['Item'][selectedCriteria2];
+        return {x:d['Item'].date, y1:Number(retY1), y2:Number(retY2)}
       })
 
       setCurrentData(newLine);
@@ -303,7 +296,7 @@ export default function ChartContainer(props) {
         body: JSON.stringify({ 
             "symbol": symbol,
             "callOrPut": bear ? 'Put' : 'Call',
-            "strike": strike,
+            "strike": Number(strike).toFixed(3).toString(),
             "from": from,
             "to": to,
             "date": exp
@@ -425,10 +418,16 @@ export default function ChartContainer(props) {
 
     function SymbolChart(props) {
 
+      const canZoomOut = () => {
+        if (from === minDate && to === today() ) return false;
+        return true;
+      }
+
       const onClick = (datum) => {
         if (datum && datum.payload && datum.payload.x) {
           setSelectedItem(data.find(x => x.Item.date === datum.payload.x));
         }
+        handleChartClick(datum.payload.x)
       }
 
       const getAxisYDomain = (from, to, ref, offset) => {
@@ -448,6 +447,7 @@ export default function ChartContainer(props) {
         if ( refAreaLeft === refAreaRight || refAreaRight === '' ) {
           setRefAreaLeft('');
           setRefAreaRight('');
+          // setCanZoomOut(true);
           return;
         }
     
@@ -478,37 +478,99 @@ export default function ChartContainer(props) {
       const zoomOut = () => {
         setRefAreaLeft('');
         setRefAreaRight('');
-        setFrom('dataMin');
+        setFrom(minDate);
         setOldFrom(from);
-        setTo('dataMax');
+        setTo(today());
         setOldTo(to);
         setBottom('dataMin');
         setTop('dataMax');
         setBottom2('dataMin');
         setTop2('dataMax');
+        // setCanZoomOut(false);
+      }
+
+      const handleChartClick = (e) => {
+        setSelectedItem(data.find(x => x.Item.date === e));
+        
+        if (refAreaLeft === e || refAreaRight === e) {
+          setRefAreaRight('');
+          setRefAreaLeft('');
+          return;
+        }
+
+        // setIsAnimationActive(true);
+        // if (e && e.activeLabel) {
+        if (refAreaLeft === '') {
+          setRefAreaLeft(e);
+          // setIsAnimationActive(false);
+          return;
+        }
+        if (refAreaRight === '') {
+          if (refAreaLeft < e) {
+            setRefAreaRight(e);
+            return;
+          } else {
+            setRefAreaRight(refAreaLeft);
+            setRefAreaLeft(e);
+            return;
+          }
+        }
+        if (new Date(refAreaRight) - new Date(e) < new Date(e) - new Date(refAreaLeft)) {
+        // if (new Date(e) < new Date(refAreaRight)) {
+          setRefAreaRight(e);
+          // setIsAnimationActive(false);
+
+          return
+        } else {
+          setRefAreaLeft(e);
+        }
       }
     
      return (
 
       <div className={classes.chart}>
+
           <div className={classes.chartDisplayName}>
+          <Button 
+            variant="contained"
+            onClick={zoomOut}
+            className={classes.zoomOutButton}
+            // disabled={canZoomOut}
+            color="primary"
+            >Zoom Out
+          </Button>
             {chartDisplayName}
+          <Button 
+            variant="contained"
+            onClick={zoom}
+            className={classes.zoomInButton}
+            disabled={refAreaLeft === '' || refAreaRight === ''}
+            color="secondary"
+            >Zoom In
+          </Button>
           </div>
           
             {noData ? <div className={classes.noData}>No Data</div> :
           <ResponsiveContainer className={classes.responsiveContainer} height='100%' width='95%'>
             <LineChart  
               data={currentData}
-              onMouseDown = { (e) => {if (e && e.activeLabel) setRefAreaLeft(e.activeLabel)} }
-              onMouseMove = { (e) => refAreaLeft && setRefAreaRight(e.activeLabel) }
-              onMouseUp = { zoom }
+              // onMouseDown = { (e) => {if (e && e.activeLabel) setRefAreaLeft(e.activeLabel)} }
+              // onMouseMove = { (e) => refAreaLeft && setRefAreaRight(e.activeLabel) }
+              // onMouseUp = { zoom }
+              margin={{ top: 25, right: 20, bottom: 0, left: 20 }}
             >
+              {(refAreaLeft && refAreaRight) ? (
+                <ReferenceArea yAxisId="y1" x1={refAreaLeft} x2={refAreaRight}  strokeOpacity={0.3} /> ) : null
+              }
+
               <Line type="monotone"
                 dataKey= 'y1'
                 yAxisId= 'y1'
                 stroke="#ff9933" 
                 isAnimationActive={isAnimationActive}
                 onAnimationEnd={() => { setIsAnimationActive(false) }}
+                dot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)}}}
+                activeDot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)}}}
               />
               <Line type="monotone"
                 dataKey= 'y2'
@@ -516,6 +578,9 @@ export default function ChartContainer(props) {
                 stroke="#392bff" 
                 isAnimationActive={isAnimationActive}
                 onAnimationEnd={() => { setIsAnimationActive(false) }}
+                dot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)}}}
+                activeDot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)} }}
+
               />
               <XAxis 
                 tick={{fontSize: '2vh'}}
@@ -527,39 +592,42 @@ export default function ChartContainer(props) {
                 stroke='#f2f2f2'
                 domain={[from, to]}
               />
-              <YAxis 
-                yAxisId= "y1"
-                orientation="left"
-                stroke='#f2f2f2' 
-                tick={{fontSize: '2vh', fill: '#ff9933'}}
-                domain={[0, 'dataMax']}
-                angle={-45}
-                tickFormatter={(d) => {
-                  // if (d === 0) return '';
-                  return d.toString().slice(0,7)
-                }}
-                domain={[bottom, top]}
-              />
+                <YAxis 
+                  yAxisId= "y1"
+                  orientation="left"
+                  stroke='#f2f2f2' 
+                  tick={{fontSize: '2vh', fill: '#ff9933', dy:-10}}
+                  // domain={[0, 'dataMax']}
+                  // angle={-45}
+                  tickFormatter={(d) => {
+                    // if (d === 0) return '';
+                    return d.toString().slice(0,7)
+                  }}
+                  domain={[bottom, top]}
+                  reversed={false}
+                />
               <YAxis
                 yAxisId= "y2"
                 orientation="right"
                 stroke='#f2f2f2' 
-                tick={{fontSize: '2vh', fill: '#392bff'}}
-                domain={[0, 'dataMax']}
-                angle={45}
+                tick={{fontSize: '2vh', fill: '#392bff',dy:-10}}
+                // domain={[0, 'dataMax']}
+                // angle={45}
                 tickFormatter={(d) => {
-                  if (d === 0) return '';
+                  // if (d === 0) return '';
                   return d.toString().slice(0,7)
                 }}
                 domain={[bottom2, top2]}
+                reversed={false}
+
               />
-              {(refAreaLeft && refAreaRight) ? (
-              <ReferenceArea yAxisId="y1" x1={refAreaLeft} x2={refAreaRight}  strokeOpacity={0.3} /> ) : null
-              }
+
               <Tooltip 
+                y1={selectedCriteria1}
+                y2={selectedCriteria2}
                 customCallback={onClick}
                 content={<CustomTooltip/>} 
-                position={{ x: 'auto', y: 0 }}
+                position={{ x: 'auto', y: -70 }}
                 offset={0}
                 contentStyle={{ backgroundColor: '#666666', color: '#f2f2f2'}}
               />
@@ -598,6 +666,8 @@ export default function ChartContainer(props) {
                   search = {search}
                   searchCriteriaChanged = {searchCriteriaChanged}
                 ></CriteriaContainer>
+                <MetaDataContainer selectedItem = {selectedItem}>
+                </MetaDataContainer>
             </Paper>
           </MuiPickersUtilsProvider>
         )
