@@ -588,7 +588,7 @@ export default function ChartContainer(props) {
                 content={<CustomTooltip/>} 
                 position={{ x: 'auto', y: -35 }}
                 offset={0}
-                contentStyle={{ backgroundColor: '#666666', color: '#f2f2f2'}}
+                contentStyle={{ backgroundColor: '#333333', color: '#f2f2f2'}}
               />
               {(refAreaLeft && refAreaRight) ? (
                 <ReferenceArea yAxisId="y1" x1={refAreaLeft} x2={refAreaRight}  strokeOpacity={0.3} /> ) : null
