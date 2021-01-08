@@ -2,7 +2,7 @@
 // but it's located in the package lib so you can get to it anyways
 import DefaultTooltipContent from 'recharts/lib/component/DefaultTooltipContent';
 import React, { useState } from 'react';
-
+import ZoomInIcon from '@material-ui/icons/ZoomIn';
 
 const CustomTooltip = props => {
 
@@ -24,7 +24,6 @@ const CustomTooltip = props => {
     props.payload[0].name = props.y1;
     props.payload[1].name = props.y2;
 
-
     const newPayload = [
       {
         // all your data which created the tooltip is located in the .payload property
@@ -36,11 +35,16 @@ const CustomTooltip = props => {
 
     // we render the default, but with our overridden payload
     const customTooltip = (
-    <div style={{pointerEvents: 'auto'}}onClick={() => {
+    <div style={{
+      pointerEvents: 'auto',
+      lineHeight: '50%'
+      }}
+      onClick={() => {
         props.customCallback(tooltipDate[0])
-    }}
+      }}
     >
-        <DefaultTooltipContent {...props} payload={newPayload} />
+        <DefaultTooltipContent {...props} payload={newPayload}>
+        </DefaultTooltipContent>
     </div>
     )
     return customTooltip;

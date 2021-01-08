@@ -172,7 +172,9 @@ export default function ChartContainer(props) {
       const nd = new Date(utc + (3600000*-4));
       nd.setDate(nd.getDate() - i)
       if ((nd.getDay() === 5) && i!==0) {
+        console.log(parseDate(nd.toString()));
         return parseDate(nd.toString());
+
       }
     };
   }
@@ -183,16 +185,16 @@ export default function ChartContainer(props) {
     const [symbol, setSymbol] = useState('AAPL');
     const [from, setFrom] = useState(minDate); //useState(aWeekAgo())
     const [to, setTo] = useState(today());
-    const [strike, setStrike] = useState(120);
+    const [strike, setStrike] = useState('120.000');
     const [bear, setBear] = useState(false);
-    const [exp, setExp] = useState(lastFriday());
+    const [exp, setExp] = useState('2021-01-08'); //lastFriday()
     const [chartLoaded, setChartLoaded] = useState(false);
     const [searchCriteriaChanged, setSearchCriteriaChanged] = useState(false);
     const [chartDisplayName, setChartDisplayName] = useState('');
     const [oldSymbol, setOldSymbol] = useState('AAPL');
     const [oldFrom, setOldFrom] = useState(minDate);
     const [oldTo, setOldTo] = useState(today());
-    const [oldExp, setOldExp] = useState(lastFriday());
+    const [oldExp, setOldExp] = useState('2021-01-08'); //lastFriday()
     const [oldStrike, setOldStrike] = useState(120);
     const [oldBear, setOldBear] = useState(false);
     const [selectedItem, setSelectedItem] = useState({});
@@ -418,16 +420,11 @@ export default function ChartContainer(props) {
 
     function SymbolChart(props) {
 
-      const canZoomOut = () => {
-        if (from === minDate && to === today() ) return false;
-        return true;
-      }
-
       const onClick = (datum) => {
         if (datum && datum.payload && datum.payload.x) {
           setSelectedItem(data.find(x => x.Item.date === datum.payload.x));
         }
-        handleChartClick(datum.payload.x)
+        // handleChartClick(datum.payload.x)
       }
 
       const getAxisYDomain = (from, to, ref, offset) => {
@@ -443,7 +440,39 @@ export default function ChartContainer(props) {
         return [ (bottom|0) - offset, (top|0) + offset ]
       };
 
-      const zoom = () => {     
+      const fixedZoom = (date) => {
+        const idx = data.findIndex(x => x.Item.date === date);
+        // setRefAreaLeft(data[idx-1].Item.date);
+        // setRefAreaRight(data[idx+1].Item.date);
+      
+        const refLeft = data[idx-1].Item.date;
+
+        let refRight = ''
+        if (idx === data.length-2) {
+          refRight = data[idx+1].Item.date
+        } else {
+          refRight = data[idx+2].Item.date
+        }
+    
+        // yAxis domain
+        const [ tempBottom, tempTop ] = getAxisYDomain( refLeft, refRight, 'y1', 1 );
+        const [ tempBottom2, tempTop2 ] = getAxisYDomain( refLeft, refRight, 'y2', 1 );
+        
+        setRefAreaLeft('');
+        setRefAreaRight('');
+        setFrom(refLeft);
+        setOldFrom(from);
+        setTo(refRight);
+        setOldTo(to);
+        setBottom(tempBottom);
+        setTop(tempTop);
+        setBottom2(tempBottom2);
+        setTop2(tempTop2);
+      }
+
+      const zoom = () => {  
+        let refRight = refAreaRight.slice();
+        let refLeft = refAreaLeft.slice();
         if ( refAreaLeft === refAreaRight || refAreaRight === '' ) {
           setRefAreaLeft('');
           setRefAreaRight('');
@@ -452,22 +481,32 @@ export default function ChartContainer(props) {
         }
     
         // xAxis domain
-        if ( refAreaLeft > refAreaRight ) {
-          const tempLeft = refAreaLeft.slice();
-          const tempRight = refAreaRight.slice();
-          setRefAreaLeft(tempRight);
-          setRefAreaRight(tempLeft);
-        }    
+        if ( new Date(refLeft) > new Date(refRight) ) {
+          const tempLeft = refLeft.slice();
+          const tempRight = refRight.slice();
+          refRight = tempLeft;
+          refLeft = tempRight;
+        }
 
         // yAxis domain
-        const [ tempBottom, tempTop ] = getAxisYDomain( refAreaLeft, refAreaRight, 'y1', 1 );
-        const [ tempBottom2, tempTop2 ] = getAxisYDomain( refAreaLeft, refAreaRight, 'y2', 1 );
-        
+        const [ tempBottom, tempTop ] = getAxisYDomain( refLeft, refRight, 'y1', 1 );
+        const [ tempBottom2, tempTop2 ] = getAxisYDomain( refLeft, refRight, 'y2', 1 );
+
+        const idx = data.findIndex(x => x.Item.date === refRight);
+        // setRefAreaLeft(data[idx-1].Item.date);
+        // setRefAreaRight(data[idx+1].Item.date);
+      
+        if (idx === data.length-1) {
+          refRight = data[idx].Item.date
+        } else {
+          refRight = data[idx+1].Item.date
+        }
+
         setRefAreaLeft('');
         setRefAreaRight('');
-        setFrom(refAreaLeft);
+        setFrom(refLeft);
         setOldFrom(from);
-        setTo(refAreaRight);
+        setTo(refRight);
         setOldTo(to);
         setBottom(tempBottom);
         setTop(tempTop);
@@ -489,40 +528,22 @@ export default function ChartContainer(props) {
         // setCanZoomOut(false);
       }
 
-      const handleChartClick = (e) => {
-        setSelectedItem(data.find(x => x.Item.date === e));
-        
-        if (refAreaLeft === e || refAreaRight === e) {
-          setRefAreaRight('');
-          setRefAreaLeft('');
-          return;
-        }
-
-        // setIsAnimationActive(true);
-        // if (e && e.activeLabel) {
-        if (refAreaLeft === '') {
-          setRefAreaLeft(e);
-          // setIsAnimationActive(false);
-          return;
-        }
-        if (refAreaRight === '') {
-          if (refAreaLeft < e) {
-            setRefAreaRight(e);
-            return;
-          } else {
-            setRefAreaRight(refAreaLeft);
-            setRefAreaLeft(e);
-            return;
+      const handleMouseDown = (e) => {
+        if (e && e.activeLabel) {
+          setSelectedItem(data.find(x => x.Item.date === e.activeLabel));
+          if (window.screen.width > 800) {
+            setRefAreaLeft(e.activeLabel)
           }
         }
-        if (new Date(refAreaRight) - new Date(e) < new Date(e) - new Date(refAreaLeft)) {
-        // if (new Date(e) < new Date(refAreaRight)) {
-          setRefAreaRight(e);
-          // setIsAnimationActive(false);
+      }
 
-          return
-        } else {
-          setRefAreaLeft(e);
+      const canZoomIn = () => {
+        if (data && selectedItem.Item) {
+          const idx = data.findIndex(x => x.Item.date === selectedItem.Item.date);
+          if (idx === 0 || idx === data.length-1) {
+            return true;
+          }
+          return false;
         }
       }
     
@@ -542,9 +563,9 @@ export default function ChartContainer(props) {
             {chartDisplayName}
           <Button 
             variant="contained"
-            onClick={zoom}
+            onClick={() => {fixedZoom(selectedItem.Item.date)}}
             className={classes.zoomInButton}
-            disabled={refAreaLeft === '' || refAreaRight === ''}
+            disabled={canZoomIn()}
             color="secondary"
             >Zoom In
           </Button>
@@ -554,11 +575,21 @@ export default function ChartContainer(props) {
           <ResponsiveContainer className={classes.responsiveContainer} height='100%' width='95%'>
             <LineChart  
               data={currentData}
-              // onMouseDown = { (e) => {if (e && e.activeLabel) setRefAreaLeft(e.activeLabel)} }
-              // onMouseMove = { (e) => refAreaLeft && setRefAreaRight(e.activeLabel) }
-              // onMouseUp = { zoom }
+              onMouseDown = { (e) => handleMouseDown(e) }
+              onMouseMove = { (e) => refAreaLeft && setRefAreaRight(e.activeLabel) }
+              onMouseUp = { zoom }
               margin={{ top: 25, right: 20, bottom: 0, left: 20 }}
             >
+              <Tooltip 
+                y1={selectedCriteria1}
+                y2={selectedCriteria2}
+                customCallback={onClick}
+                zoom={zoom}
+                content={<CustomTooltip/>} 
+                position={{ x: 'auto', y: -35 }}
+                offset={0}
+                contentStyle={{ backgroundColor: '#666666', color: '#f2f2f2'}}
+              />
               {(refAreaLeft && refAreaRight) ? (
                 <ReferenceArea yAxisId="y1" x1={refAreaLeft} x2={refAreaRight}  strokeOpacity={0.3} /> ) : null
               }
@@ -569,8 +600,11 @@ export default function ChartContainer(props) {
                 stroke="#ff9933" 
                 isAnimationActive={isAnimationActive}
                 onAnimationEnd={() => { setIsAnimationActive(false) }}
-                dot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)}}}
-                activeDot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)}}}
+                // dot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)},
+                  // onTouchStart: (event,payload) => {handleChartClick(event.payload.x)}
+                // }}
+                // activeDot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)},
+                //  onTouchStart: (event,payload) => {handleChartClick(event.payload.x)}}}
               />
               <Line type="monotone"
                 dataKey= 'y2'
@@ -578,8 +612,11 @@ export default function ChartContainer(props) {
                 stroke="#392bff" 
                 isAnimationActive={isAnimationActive}
                 onAnimationEnd={() => { setIsAnimationActive(false) }}
-                dot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)}}}
-                activeDot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)} }}
+                // dot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)},
+                //   // onTouchStart: (event,payload) => {handleChartClick(event.payload.x)}
+                // }}
+                // activeDot={{ onClick: (event,payload) => {handleChartClick(event.payload.x)},
+                //   onTouchStart: (event,payload) => {handleChartClick(event.payload.x)} }}
 
               />
               <XAxis 
@@ -590,6 +627,7 @@ export default function ChartContainer(props) {
                   return split[1] + '-' + split[2]
                 }}
                 stroke='#f2f2f2'
+                allowDataOverflow={true}
                 domain={[from, to]}
               />
                 <YAxis 
@@ -620,16 +658,6 @@ export default function ChartContainer(props) {
                 domain={[bottom2, top2]}
                 reversed={false}
 
-              />
-
-              <Tooltip 
-                y1={selectedCriteria1}
-                y2={selectedCriteria2}
-                customCallback={onClick}
-                content={<CustomTooltip/>} 
-                position={{ x: 'auto', y: -70 }}
-                offset={0}
-                contentStyle={{ backgroundColor: '#666666', color: '#f2f2f2'}}
               />
               </LineChart>
           </ResponsiveContainer>}
