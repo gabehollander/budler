@@ -221,7 +221,7 @@ export default function ChartContainer(props) {
 
   const handleSymbolChange = event => {
     if (symbol !== event.target.value) {
-      setSymbol(event.target.value);
+      setSymbol(event.target.value.toUpperCase());
     }
   };
 
