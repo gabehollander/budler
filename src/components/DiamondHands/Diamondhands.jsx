@@ -7,9 +7,8 @@ import TabPanel from '../TabPanel/TabPanel'
 import DeviceOrientation, { Orientation } from 'react-screen-orientation'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
-import { useParams } from "react-router";
-import { createBrowserHistory } from 'history';
 import history from './history';
+import firebase from './firebase';
 
 
 
@@ -94,7 +93,7 @@ export default function Diamondhands(props) {
                             <CustomAppBar handleTabChange={(event, newValue) => setTabValue(newValue)}></CustomAppBar>
                             <TabPanel value={tabValue} index={0}>
                                 {/* <div style={{height: '100vh',width:'100vw',backgroundColor:'#000000'}}> */}
-                                    <ChartContainer></ChartContainer>
+                                    <ChartContainer firebase={firebase}></ChartContainer>
                                 {/* </div> */}
                             </TabPanel>
                             <TabPanel value={tabValue} index={1}>

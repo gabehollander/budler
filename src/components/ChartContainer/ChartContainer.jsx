@@ -13,6 +13,9 @@ import SymbolChart from '../SymbolChart/SymbolChart'
 import './ChartContainer.scss';
 import { useLocation } from "react-router-dom";
 import history from '../DiamondHands/history';
+import firebase from '../DiamondHands/firebase'
+
+const analytics = firebase.analytics()
 
 const useStyles = makeStyles(theme => ({
     gridContainer: {
@@ -118,6 +121,7 @@ export default function ChartContainer(props) {
           setData(json)
           setChartLoaded(true);
           setChartDisplayName(formatSymbolDisplayName(symbol,strike,exp,bear));
+          analytics.logEvent(formatSymbolDisplayName(symbol,strike,exp,bear));
           setOldSymbol(symbol);
           setOldBear(bear);
           setOldStrike(strike);
@@ -201,6 +205,7 @@ export default function ChartContainer(props) {
       setData(json)
       setChartLoaded(true);
       setChartDisplayName(formatSymbolDisplayName(symbol,strike,exp,bear));
+      analytics.logEvent(formatSymbolDisplayName(symbol,strike,exp,bear));
       setOldSymbol(symbol);
       setOldBear(bear);
       setOldStrike(strike);
