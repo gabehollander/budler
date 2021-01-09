@@ -46,9 +46,6 @@ export default function SymbolChart(props) {
         return formatYmd(new Date());
     }
 
-    // first default date, when I bought the subscription.
-    const minDate = '2020-12-28'
-
     const classes = useStyles();
 
     // chart state
@@ -158,7 +155,7 @@ export default function SymbolChart(props) {
     const zoomOut = () => {
       setRefAreaLeft('');
       setRefAreaRight('');
-      props.setFrom(minDate);
+      props.setFrom(props.minDate);
       props.setOldFrom(props.from);
       props.setTo(today());
       props.setOldTo(props.to);

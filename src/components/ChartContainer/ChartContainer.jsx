@@ -56,6 +56,7 @@ export default function ChartContainer(props) {
     return formatYmd(new Date());
   }
 
+  // first day of data
   const minDate = '2020-12-28'
 
   const classes = useStyles();
@@ -277,6 +278,7 @@ export default function ChartContainer(props) {
                   selectedCriteria2 = {selectedCriteria2}
                   selectedItem = {selectedItem}
                   setSelectedItem = {setSelectedItem}
+                  minDate = {minDate}
                 ></SymbolChart>:
                 <div className={classes.chartLoading}>Loading...</div>
               }
