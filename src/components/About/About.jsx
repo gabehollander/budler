@@ -49,10 +49,8 @@ export default function About(props) {
             For <a href="https://datashop.cboe.com/option-trades">all</a> tick level data since 2005, on all symbols, a <i>measly</i> 30K one time charge.
             <br/><br/>
             I purchased a subscription for daily eod quotes, and I have integrated the data with this site. 
-            Needless to say, if I don't want CBOE + AWS fees to obliterate my credit card, I'm going to have to put ads on this site.
-            The goal is to keep this site as free as possible, at least for eod quotes.
-            I have the intention of adding more features and data, although if I do I almost certainly will add a monthly fee (more data = more overhead).
-
+            Needless to say, if I don't want CBOE + AWS fees to obliterate my credit card, I'm going to have to run ads.
+            The goal is to keep this site as free as possible.
             <br/><br/>
             I hope you find this data useful and insightful, and good luck finding the next ten bagger!
             <br/><br/>
