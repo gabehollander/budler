@@ -6,6 +6,12 @@ import About from '../About/About'
 import TabPanel from '../TabPanel/TabPanel'
 import DeviceOrientation, { Orientation } from 'react-screen-orientation'
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import { useParams } from "react-router";
+import { createBrowserHistory } from 'history';
+import history from './history';
+
+
 
 const theme = createMuiTheme({
     overrides: {
@@ -74,41 +80,48 @@ export default function Diamondhands(props) {
 
     const [tabValue, setTabValue] = useState(0);
 
+
     return (
-        <div style={{height: '100vh',width:'100vw',backgroundColor:'#000000'}}>
-            <DeviceOrientation lockOrientation={'landscape'}>
-                {/* Will only be in DOM in landscape */}
-                <Orientation orientation='landscape' alwaysRender={false}>
-                    <div>
-                    <MuiThemeProvider theme={theme}>
-                        <CustomAppBar handleTabChange={(event, newValue) => setTabValue(newValue)}></CustomAppBar>
-                        <TabPanel value={tabValue} index={0}>
-                            {/* <div style={{height: '100vh',width:'100vw',backgroundColor:'#000000'}}> */}
-                                <ChartContainer></ChartContainer>
-                            {/* </div> */}
-                        </TabPanel>
-                        <TabPanel value={tabValue} index={1}>
-                            <About></About>
-                        </TabPanel>
-                    </MuiThemeProvider>
-                    </div>
-                </Orientation>
-                {/* Will stay in DOM, but is only visible in portrait */}
-                <Orientation orientation='portrait' alwaysRender={false}>
-                    <div>
-                    <p style={{
-                        height: '100vh',
-                        width: '100vw',
-                        position: 'absolute',
-                        textAlign: 'center',
-                        top: '45%',
-                        color: '#f2f2f2'
-                    }}
-                    >Please rotate your device</p>
-                    </div>
-                </Orientation>
-            </DeviceOrientation>
-        </div>
+      <Router history={ history }>
+        <Switch>
+          <Route path="/" children={
+            <div style={{height: '100vh',width:'100vw',backgroundColor:'#000000'}}>
+                <DeviceOrientation lockOrientation={'landscape'}>
+                    {/* Will only be in DOM in landscape */}
+                    <Orientation orientation='landscape' alwaysRender={false}>
+                        <div>
+                        <MuiThemeProvider theme={theme}>
+                            <CustomAppBar handleTabChange={(event, newValue) => setTabValue(newValue)}></CustomAppBar>
+                            <TabPanel value={tabValue} index={0}>
+                                {/* <div style={{height: '100vh',width:'100vw',backgroundColor:'#000000'}}> */}
+                                    <ChartContainer></ChartContainer>
+                                {/* </div> */}
+                            </TabPanel>
+                            <TabPanel value={tabValue} index={1}>
+                                <About></About>
+                            </TabPanel>
+                        </MuiThemeProvider>
+                        </div>
+                    </Orientation>
+                    {/* Will stay in DOM, but is only visible in portrait */}
+                    <Orientation orientation='portrait' alwaysRender={false}>
+                        <div>
+                        <p style={{
+                            height: '100vh',
+                            width: '100vw',
+                            position: 'absolute',
+                            textAlign: 'center',
+                            top: '45%',
+                            color: '#f2f2f2'
+                        }}
+                        >Please rotate your device</p>
+                        </div>
+                    </Orientation>
+                </DeviceOrientation>
+            </div>
+          } />
+        </Switch>
+      </Router>
     )
 
 }

@@ -14,6 +14,10 @@ import MetaDataContainer from '../MetaDataContainer/MetaDataContainer';
 import './ChartContainer.scss';
 import Button from '@material-ui/core/Button';
 import { setRef } from '@material-ui/core';
+import { useParams } from "react-router";
+import { Link, useLocation, BrowserRouter as Router } from "react-router-dom";
+import { browserHistory } from 'react-router';
+import history from '../DiamondHands/history';
 
 const useStyles = makeStyles(theme => ({
     gridContainer: {
@@ -130,8 +134,13 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function ChartContainer(props) {
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
+
+export default function ChartContainer(props) {
+  const query = useQuery();
   const today = () => {
     const formatYmd = date => date.toISOString().slice(0, 10);
     return formatYmd(new Date());
@@ -182,21 +191,21 @@ export default function ChartContainer(props) {
     const classes = useStyles();
     const [data, setData] = useState([]);
     const [currentData, setCurrentData] = useState([]);
-    const [symbol, setSymbol] = useState('AAPL');
+    const [symbol, setSymbol] = useState(query.get("symbol") ? query.get("symbol").toUpperCase() : 'AAPL');
     const [from, setFrom] = useState(minDate); //useState(aWeekAgo())
     const [to, setTo] = useState(today());
-    const [strike, setStrike] = useState('120.000');
-    const [bear, setBear] = useState(false);
-    const [exp, setExp] = useState('2021-01-08'); //lastFriday()
+    const [strike, setStrike] = useState(query.get('strike') || '120');
+    const [bear, setBear] = useState(query.get('bear') === 'true');
+    const [exp, setExp] = useState(query.get('exp') || '2021-01-08'); //lastFriday()
     const [chartLoaded, setChartLoaded] = useState(false);
     const [searchCriteriaChanged, setSearchCriteriaChanged] = useState(false);
     const [chartDisplayName, setChartDisplayName] = useState('');
-    const [oldSymbol, setOldSymbol] = useState('AAPL');
+    const [oldSymbol, setOldSymbol] = useState(query.get("symbol") ? query.get("symbol").toUpperCase() : 'AAPL');
     const [oldFrom, setOldFrom] = useState(minDate);
     const [oldTo, setOldTo] = useState(today());
-    const [oldExp, setOldExp] = useState('2021-01-08'); //lastFriday()
+    const [oldExp, setOldExp] = useState(query.get('exp') || '2021-01-08'); //lastFriday()
     const [oldStrike, setOldStrike] = useState(120);
-    const [oldBear, setOldBear] = useState(false);
+    const [oldBear, setOldBear] = useState(query.get('bear') === 'true');
     const [selectedItem, setSelectedItem] = useState({});
     const [noData, setNoData] = useState(true);
     const [isAnimationActive, setIsAnimationActive] = useState(true);
@@ -225,7 +234,7 @@ export default function ChartContainer(props) {
             body: JSON.stringify({ 
                 "symbol": symbol,
                 "callOrPut": bear ? 'Put' : 'Call',
-                "strike":strike,
+                "strike": Number(strike).toFixed(3).toString(),
                 "from": from,
                 "to": to,
                 "date": exp
@@ -289,6 +298,13 @@ export default function ChartContainer(props) {
       } 
     },[from,to])
 
+    const setQueryParams = (sym, str, ex, b) => {
+      history.push({
+        pathname: '/',
+        search: '?symbol='+sym+'&strike='+str+'&exp='+ex+'&bear='+b
+      })
+    }
+
     const search = () => {
       setSearchCriteriaChanged(false);
       setChartLoaded(false);
@@ -323,6 +339,7 @@ export default function ChartContainer(props) {
         }
         setOldExp(exp);
         setIsAnimationActive(true)
+        setQueryParams(symbol,strike,exp,bear);
       });
     }
 
