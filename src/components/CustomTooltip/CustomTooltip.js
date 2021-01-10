@@ -67,12 +67,6 @@ const CustomTooltip = props => {
     }
     // mutating props directly is against react's conventions
     // so we create a new payload with the name and value fields set to what we want
-    if (moneyCriteria.includes(props.y1) && props.payload[0].payload.y1.toString().indexOf('$') === -1){
-      props.payload[0].payload.y1 = '$' + props.payload[0].payload.y1
-    }
-    if (moneyCriteria.includes(props.y2) && props.payload[1].payload.y2.toString().indexOf('$') === -1){
-      props.payload[1].payload.y2 = '$' + props.payload[1].payload.y2
-    }
     props.payload[0].name = criteria.find(x => x.value === props.y1).label;
     props.payload[1].name = criteria.find(x => x.value === props.y2).label;
 

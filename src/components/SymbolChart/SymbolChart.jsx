@@ -35,7 +35,8 @@ const useStyles = makeStyles(theme => ({
       whiteSpace: 'nowrap',
       fontSize: '10px',
       marginLeft: '3%',
-      backgroundColor: '#392bff',
+      backgroundColor: '#4de1ff',
+      color: 'rgba(0, 0, 0, 0.87)',
     },
 }))
 
@@ -258,8 +259,9 @@ export default function SymbolChart(props) {
             <Line type="monotone"
               dataKey= 'y2'
               yAxisId= 'y2'
-              stroke="#392bff" 
+              stroke="#4de1ff" 
               isAnimationActive={true}
+              //#4de1ff
             />
             <XAxis 
               tick={{fontSize: '2vh'}}
@@ -291,7 +293,7 @@ export default function SymbolChart(props) {
               yAxisId= "y2"
               orientation="right"
               stroke='#f2f2f2' 
-              tick={{fontSize: '2vh', fill: '#392bff',dy:-10}}
+              tick={{fontSize: '2vh', fill: '#4de1ff',dy:-10}}
               tickFormatter={(d) => {
                 if (moneyCriteria.includes(props.selectedCriteria2)) {
                     return '$' + d.toString().slice(0,7)
