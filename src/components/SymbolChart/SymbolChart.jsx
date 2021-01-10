@@ -39,6 +39,23 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
+const moneyCriteria = [
+    'open',
+    'high',
+    'low',
+    'close',
+    'bid_1545',
+    'ask_1545',
+    'underlying_bid_1545',
+    'underlying_ask_1545',
+    'bid_eod',
+    'implied_underlying_price_1545',
+    'ask_eod',
+    'underlying_bid_eod',
+    'underlying_ask_eod',
+    'vwap'
+]
+
 export default function SymbolChart(props) {
 
     const today = () => {
@@ -261,7 +278,11 @@ export default function SymbolChart(props) {
                 stroke='#f2f2f2' 
                 tick={{fontSize: '2vh', fill: '#ff9933', dy:-10}}
                 tickFormatter={(d) => {
-                  return d.toString().slice(0,7)
+                    if (moneyCriteria.includes(props.selectedCriteria1)) {
+                        return '$' + d.toString().slice(0,7)
+                    } else {
+                        return d.toString().slice(0,7)
+                    } 
                 }}
                 domain={[bottom, top]}
                 reversed={false}
@@ -272,7 +293,11 @@ export default function SymbolChart(props) {
               stroke='#f2f2f2' 
               tick={{fontSize: '2vh', fill: '#392bff',dy:-10}}
               tickFormatter={(d) => {
-                return d.toString().slice(0,7)
+                if (moneyCriteria.includes(props.selectedCriteria2)) {
+                    return '$' + d.toString().slice(0,7)
+                } else {
+                    return d.toString().slice(0,7)
+                } 
               }}
               domain={[bottom2, top2]}
               reversed={false}

@@ -18,33 +18,33 @@ import ListIcon from '@material-ui/icons/List';
 const CriteriaContainer = props => {
 
     const criteria = [	
-        'open',	
-        'high',	
-        'low',	
-        'close',	
-        'trade_volume',
-        'bid_size_1545',
-        'bid_1545',
-        'ask_size_1545',
-        'ask_1545',
-        'underlying_bid_1545',
-        'underlying_ask_1545',
-        'implied_underlying_price_1545',	
-        'active_underlying_price_1545',	
-        'implied_volatility_1545',
-        'delta_1545',
-        'gamma_1545',	
-        'theta_1545',	
-        'vega_1545',	
-        'rho_1545',
-        'bid_size_eod',
-        'bid_eod',	
-        'ask_size_eod',	
-        'ask_eod',	
-        'underlying_bid_eod',	
-        'underlying_ask_eod',	
-        'vwap',
-        'open_interest'
+        {value:'open',label: 'open'},	
+        {value:'high',label: 'high'},	
+        {value:'low',label: 'low'},	
+        {value:'close',label: 'close'},	
+        {value:'trade_volume',label: 'volume'},
+        {value:'bid_size_1545',label: 'bid size'},
+        {value:'bid_1545',label: 'bid'},
+        {value:'ask_size_1545',label: 'ask size'},
+        {value:'ask_1545',label: 'ask'},
+        {value:'underlying_bid_1545',label: 'underlying bid'},
+        {value:'underlying_ask_1545',label: 'underlying ask'},
+        {value:'implied_underlying_price_1545',label: 'imp. underlying price'},	
+        {value:'active_underlying_price_1545',label: 'underlying price'},	
+        {value:'implied_volatility_1545',label: 'IV'},
+        {value:'delta_1545',label: 'delta'},
+        {value:'gamma_1545',label: 'gamma'},	
+        {value:'theta_1545',label: 'theta'},	
+        {value:'vega_1545',label: 'vega'},	
+        {value:'rho_1545',label: 'rho'},
+        {value:'bid_size_eod',label: 'bid size eod'},
+        {value:'bid_eod',label: 'bid eod'},	
+        {value:'ask_size_eod',label: 'ask size eod'},	
+        {value:'ask_eod',label: 'ask eod'},	
+        {value:'underlying_bid_eod',label: 'underlying bid eod'},	
+        {value:'underlying_ask_eod',label: 'underlying ask eod'},	
+        {value:'vwap',label: 'vwap'},
+        {value:'open_interest',label: 'OI'}
     ]
 
     const useStyles = makeStyles(theme => ({
@@ -124,14 +124,6 @@ const CriteriaContainer = props => {
         setBarOpen(!barOpen)
     }
 
-    const handleSymbolClose = () => {
-        setSymbolOpen(false);
-    };
-
-    const handleSymbolOpen = () => {
-        setSymbolOpen(true);
-    };
-
     const handleLeftAxisChange = event => {
         if (props.selectedCriteria1 !== event.target.value) {
           props.setSelectedCriteria1(event.target.value);
@@ -161,7 +153,7 @@ const CriteriaContainer = props => {
     };
 
     const menuItems = criteria.map(c => {
-        return <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value={c}>{c}</MenuItem>
+        return <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value={c.value}>{c.label}</MenuItem>
     })
 
     return (
@@ -180,27 +172,6 @@ const CriteriaContainer = props => {
                         InputProps={{ className: classes.textInput }}
                     />
                 </form>
-            {/* <InputLabel style={{fontSize: '.75rem',color:'#f2f2f2'}} id="label">Symbol</InputLabel>
-            <Select labelId="label"
-                id="symbol-select"
-                open={symbolOpen}
-                onClose={handleSymbolClose}
-                onOpen={handleSymbolOpen}
-                value={props.symbol}
-                onChange={props.handleSymbolChange}
-                style={{fontSize: '3vh',color:'#f2f2f2'}}
-                MenuProps={{
-                classes: {
-                    paper: classes.customSelect
-                }
-                }}
-            >
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="VXX">VXX</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="TSLA">TSLA</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="T">T</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="SPY">SPY</MenuItem>
-                <MenuItem style={{backgroundColor:'#262626','color':'#f2f2f2'}}value="AAPL">AAPL</MenuItem>
-            </Select> */}
             </div>
             <div className={classes.criteriaItem}>
             {
