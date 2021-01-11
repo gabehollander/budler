@@ -83,7 +83,7 @@ const CriteriaContainer = props => {
             backgroundColor: '#262626',
             borderRadius: '8px',
             height: '18%',
-            width: '22%',
+            width: '33%',
             position: 'absolute',
             left: '98%',
             top: '1%',

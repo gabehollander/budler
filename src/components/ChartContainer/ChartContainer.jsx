@@ -154,7 +154,7 @@ export default function ChartContainer(props) {
   useEffect(() => {
     if (
         (symbol !== oldSymbol ||
-        strike !== oldStrike ||
+        strike.toString() !== oldStrike.toString() ||
         exp !== oldExp ||
         bear !== oldBear)
     ) {
@@ -233,7 +233,7 @@ export default function ChartContainer(props) {
 
   const handleStrikeChange = event => {
     if (strike.toString() !== event.target.value) {
-      setStrike(event.target.value);
+      setStrike(Number(event.target.value).toFixed(3).toString());
     }
   }
 
