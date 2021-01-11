@@ -17,36 +17,52 @@ import AssessmentIcon from '@material-ui/icons/Assessment';
 
 const MetaDataContainer = props => {
 
-    const criteria = [
-        'date',	
-        'open',	
-        'high',	
-        'low',	
-        'close',	
-        'trade_volume',
-        'bid_size_1545',
+    const criteria = [	
+        {value:'open',label: 'open'},	
+        {value:'high',label: 'high'},	
+        {value:'low',label: 'low'},	
+        {value:'close',label: 'close'},	
+        {value:'trade_volume',label: 'volume'},
+        {value:'bid_size_1545',label: 'bid size'},
+        {value:'bid_1545',label: 'bid'},
+        {value:'ask_size_1545',label: 'ask size'},
+        {value:'ask_1545',label: 'ask'},
+        {value:'underlying_bid_1545',label: 'underlying bid'},
+        {value:'underlying_ask_1545',label: 'underlying ask'},
+        {value:'implied_underlying_price_1545',label: 'imp. underlying price'},	
+        {value:'active_underlying_price_1545',label: 'underlying price'},	
+        {value:'implied_volatility_1545',label: 'IV'},
+        {value:'delta_1545',label: 'delta'},
+        {value:'gamma_1545',label: 'gamma'},	
+        {value:'theta_1545',label: 'theta'},	
+        {value:'vega_1545',label: 'vega'},	
+        {value:'rho_1545',label: 'rho'},
+        {value:'bid_size_eod',label: 'bid size eod'},
+        {value:'bid_eod',label: 'bid eod'},	
+        {value:'ask_size_eod',label: 'ask size eod'},	
+        {value:'ask_eod',label: 'ask eod'},	
+        {value:'underlying_bid_eod',label: 'underlying bid eod'},	
+        {value:'underlying_ask_eod',label: 'underlying ask eod'},	
+        {value:'vwap',label: 'vwap'},
+        {value:'open_interest',label: 'OI'}
+    ]
+
+    const moneyCriteria = [
+        'open',
+        'high',
+        'low',
+        'close',
         'bid_1545',
-        'ask_size_1545',
         'ask_1545',
         'underlying_bid_1545',
         'underlying_ask_1545',
-        'implied_underlying_price_1545',	
-        'active_underlying_price_1545',	
-        'implied_volatility_1545',
-        'delta_1545',
-        'gamma_1545',	
-        'theta_1545',	
-        'vega_1545',	
-        'rho_1545',
-        'bid_size_eod',
-        'bid_eod',	
-        'ask_size_eod',	
-        'ask_eod',	
-        'underlying_bid_eod',	
-        'underlying_ask_eod',	
-        'vwap',
-        'open_interest'
-    ]
+        'bid_eod',
+        'implied_underlying_price_1545',
+        'ask_eod',
+        'underlying_bid_eod',
+        'underlying_ask_eod',
+        'vwap'
+    ];
 
     const useStyles = makeStyles(theme => ({
         metaDataContainer: {
@@ -95,7 +111,7 @@ const MetaDataContainer = props => {
             display: 'flex',
             margin: 'auto',
             height: '100%',
-            width: '75%',
+            width: '100%',
           },
           fixedContainerClosed:{
             bottom: '-29%',
@@ -128,7 +144,7 @@ const MetaDataContainer = props => {
 
     const dataItems = criteria.map(c => {
         if (props.selectedItem['Item']) {
-            return <div className={classes.dataItem}>{c}: <b>{props.selectedItem['Item'][c]}</b></div>
+            return <div className={classes.dataItem}>{c.label}: <b>{moneyCriteria.includes(c.value)? '$' : ''}{props.selectedItem['Item'][c.value]}</b></div>
         }
     })
 

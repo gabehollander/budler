@@ -103,7 +103,7 @@ const CriteriaContainer = props => {
             display: 'flex',
             margin: 'auto',
             height: '100%',
-            width: '75%',
+            width: '100%',
           },
           fixedContainerClosed:{
             left: '-30%',
@@ -115,7 +115,6 @@ const CriteriaContainer = props => {
 
     const classes = useStyles();
 
-    const [symbolOpen, setSymbolOpen] = useState(false);
     const [leftAxisOpen, setLeftAxisOpen] = useState(false);
     const [rightAxisOpen, setRightAxisOpen] = useState(false);
     const [barOpen, setBarOpen] = useState(false);
