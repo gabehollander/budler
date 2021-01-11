@@ -233,7 +233,7 @@ export default function ChartContainer(props) {
 
   const handleStrikeChange = event => {
     if (strike.toString() !== event.target.value) {
-      setStrike(Number(event.target.value).toFixed(3).toString());
+      setStrike(event.target.value);
     }
   }
 
