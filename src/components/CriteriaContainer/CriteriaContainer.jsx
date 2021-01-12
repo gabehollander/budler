@@ -83,7 +83,7 @@ const CriteriaContainer = props => {
             backgroundColor: '#262626',
             borderRadius: '8px',
             height: '18%',
-            width: '33%',
+            width: '22%',
             position: 'absolute',
             left: '98%',
             top: '1%',
@@ -160,7 +160,7 @@ const CriteriaContainer = props => {
         <Paper className={classes.criteriaTab} 
             onClick={handleBarToggle}
             elevation={4}
-        > <ListIcon className={classes.listIcon} /></Paper>
+        > <ListIcon fontSize="small" className={classes.listIcon} /></Paper>
         <Paper className={classes.criteriaContainer} elevation={4}>
             <div className={classes.criteriaItem}>
                 <form className={classes.root} noValidate autoComplete="off">
