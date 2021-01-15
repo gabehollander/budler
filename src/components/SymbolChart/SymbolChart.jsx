@@ -66,6 +66,12 @@ export default function SymbolChart(props) {
 
     const classes = useStyles();
 
+    useEffect(() => {
+
+
+    },[props.currentData])
+
+
     // chart state
 
     // for adjusting y axis on search and zoom.
@@ -289,6 +295,7 @@ export default function SymbolChart(props) {
                 }}
                 domain={[bottom, top]}
                 reversed={false}
+                padding={{ top: 10, bottom: 10 }}
               />
             <YAxis
               yAxisId= "y2"
@@ -304,6 +311,7 @@ export default function SymbolChart(props) {
               }}
               domain={[bottom2, top2]}
               reversed={false}
+              padding={{ top: 10, bottom: 10 }}
             />
             </LineChart>
         </ResponsiveContainer>}
