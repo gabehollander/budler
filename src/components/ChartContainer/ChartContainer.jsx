@@ -58,7 +58,7 @@ export default function ChartContainer(props) {
     const formatYmd = date => date.toISOString().slice(0, 10);
     return formatYmd(new Date());
   }
-
+  
   // first day of data
   const minDate = '2020-12-28'
 
@@ -90,8 +90,8 @@ export default function ChartContainer(props) {
   // chart state
   const [selectedItem, setSelectedItem] = useState({});
   const [noData, setNoData] = useState(true);
-  const [selectedCriteria1, setSelectedCriteria1] = useState('ask_1545');
-  const [selectedCriteria2, setSelectedCriteria2] = useState('bid_1545');
+  const [selectedCriteria1, setSelectedCriteria1] = useState(query.get("sc1") ? query.get("sc1") : 'ask_1545');
+  const [selectedCriteria2, setSelectedCriteria2] = useState(query.get("sc2") ? query.get("sc2") : 'bid_1545');
 
   const headers = {
       'Access-Control-Allow-Origin': '*',
@@ -147,6 +147,7 @@ export default function ChartContainer(props) {
     })
 
     setCurrentData(newLine);
+    setQueryParams(symbol,strike,exp,bear);
 
   },[data, selectedCriteria1, selectedCriteria2]);
 
@@ -177,7 +178,7 @@ export default function ChartContainer(props) {
   const setQueryParams = (sym, str, ex, b) => {
     history.push({
       pathname: '/',
-      search: '?symbol='+sym+'&strike='+str+'&exp='+ex+'&bear='+b
+      search: '?symbol='+sym+'&strike='+str+'&exp='+ex+'&bear='+b+'&sc1='+selectedCriteria1+'&sc2='+selectedCriteria2
     })
   }
 

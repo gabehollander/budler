@@ -14,9 +14,15 @@ import Switch from '@material-ui/core/Switch';
 import { Typography } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import ListIcon from '@material-ui/icons/List';
+import history from '../DiamondHands/history';
+import { useLocation } from "react-router-dom";
+
+// function useQuery() {
+//     return new URLSearchParams(useLocation().search);
+// }
 
 const CriteriaContainer = props => {
-
+    
     const criteria = [	
         {value:'open',label: 'open'},	
         {value:'high',label: 'high'},	
@@ -119,6 +125,19 @@ const CriteriaContainer = props => {
     const [rightAxisOpen, setRightAxisOpen] = useState(false);
     const [barOpen, setBarOpen] = useState(false);
 
+    // const setQueryParams = (qs) => {
+    //     if (query.get('sc1')) {
+    //         query.delete('sc1');
+    //     }
+    //     if (query.get('sc2')) {
+    //         query.delete('sc2');
+    //     }
+    //     history.push({
+    //       pathname: '/',
+    //       search: qs
+    //     })
+    // }
+
     const handleBarToggle = () => {
         setBarOpen(!barOpen)
     }
@@ -126,12 +145,14 @@ const CriteriaContainer = props => {
     const handleLeftAxisChange = event => {
         if (props.selectedCriteria1 !== event.target.value) {
           props.setSelectedCriteria1(event.target.value);
+        //   setQueryParams(query.toString()+'&sc1='+event.target.value+'&sc2='+props.selectedCriteria2);
         }
     }
   
     const handleRightAxisChange = event => {
         if (props.selectedCriteria2 !== event.target.value) {
             props.setSelectedCriteria2(event.target.value);
+            // setQueryParams(query.toString()+'&sc1='+props.selectedCriteria1+'&sc2='+event.target.value);
         }
     }
 

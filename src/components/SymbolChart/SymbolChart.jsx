@@ -67,19 +67,6 @@ export default function SymbolChart(props) {
     const classes = useStyles();
 
     // chart state
-    const [refAreaLeft, setRefAreaLeft] = useState('');
-    const [refAreaRight, setRefAreaRight] = useState('');
-    const [top, setTop] = useState('dataMax+1');
-    const [bottom, setBottom] = useState('dataMin-1');
-    const [top2, setTop2] = useState('dataMax+1');
-    const [bottom2, setBottom2] = useState('dataMin-1');
-
-    // for setting the selectedItem, for the bottom menu, and zoom button
-    const onClick = (datum) => {
-      if (datum && datum.payload && datum.payload.x) {
-        props.setSelectedItem(props.data.find(x => x.Item.date === datum.payload.x));
-      }
-    }
 
     // for adjusting y axis on search and zoom.
     const getAxisYDomain = (from, to, ref, offset) => {
@@ -93,6 +80,20 @@ export default function SymbolChart(props) {
       });
       return [ (bottom|0) - offset, (top|0) + offset ]
     };
+
+    const [refAreaLeft, setRefAreaLeft] = useState('');
+    const [refAreaRight, setRefAreaRight] = useState('');
+    const [top, setTop] = useState('');
+    const [bottom, setBottom] = useState('');
+    const [top2, setTop2] = useState('');
+    const [bottom2, setBottom2] = useState('');
+
+    // for setting the selectedItem, for the bottom menu, and zoom button
+    const onClick = (datum) => {
+      if (datum && datum.payload && datum.payload.x) {
+        props.setSelectedItem(props.data.find(x => x.Item.date === datum.payload.x));
+      }
+    }
 
     // for zooming from a selectedItem. 
     // Chooses indexes to the left and right of the selectedItem.
@@ -110,8 +111,8 @@ export default function SymbolChart(props) {
       }
   
       // yAxis domain
-      const [ tempBottom, tempTop ] = getAxisYDomain( refLeft, refRight, 'y1', 1 );
-      const [ tempBottom2, tempTop2 ] = getAxisYDomain( refLeft, refRight, 'y2', 1 );
+      let [ tempBottom, tempTop ] = getAxisYDomain( refLeft, refRight, 'y1', 1 );
+      let [ tempBottom2, tempTop2 ] = getAxisYDomain( refLeft, refRight, 'y2', 1 );
       
       setRefAreaLeft('');
       setRefAreaRight('');
@@ -147,8 +148,8 @@ export default function SymbolChart(props) {
       }
 
       // yAxis domain
-      const [ tempBottom, tempTop ] = getAxisYDomain( refLeft, refRight, 'y1', 1 );
-      const [ tempBottom2, tempTop2 ] = getAxisYDomain( refLeft, refRight, 'y2', 1 );
+      let [ tempBottom, tempTop ] = getAxisYDomain( refLeft, refRight, 'y1', 1 );
+      let [ tempBottom2, tempTop2 ] = getAxisYDomain( refLeft, refRight, 'y2', 1 );
 
       const idx = props.data.findIndex(x => x.Item.date === refRight);
     
