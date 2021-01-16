@@ -66,12 +66,6 @@ export default function SymbolChart(props) {
 
     const classes = useStyles();
 
-    useEffect(() => {
-
-
-    },[props.currentData])
-
-
     // chart state
 
     // for adjusting y axis on search and zoom.
@@ -93,6 +87,15 @@ export default function SymbolChart(props) {
     const [bottom, setBottom] = useState('');
     const [top2, setTop2] = useState('');
     const [bottom2, setBottom2] = useState('');
+
+    useEffect(() => {
+      // yAxis domain
+      let [ tempBottom, tempTop ] = getAxisYDomain( props.from, props.to, 'y1', 1 );
+      let [ tempBottom2, tempTop2 ] = getAxisYDomain( props.from, props.to, 'y2', 1 );
+
+      tempBottom < tempBottom2 ? setBottom(tempBottom) : setBottom(tempBottom2);
+      tempTop > tempTop2 ? setTop(tempTop) : setTop(tempTop2);
+    },[props.selectedCriteria1,props.selectedCriteria2,props.currentData])
 
     // for setting the selectedItem, for the bottom menu, and zoom button
     const onClick = (datum) => {
@@ -210,6 +213,17 @@ export default function SymbolChart(props) {
         return false;
       }
     }
+
+    const getTicks = (b,t,numTicks,axisKey) => {
+      const range = t - b;
+      const interval = range / numTicks;
+      const ticks = []
+      for ( let i = 0; i < numTicks - 1; i++ ) {
+        ticks.push(b+(interval*i));
+      }
+      ticks.push(t);
+      return ticks;
+    }
   
     return (
 
@@ -281,22 +295,23 @@ export default function SymbolChart(props) {
               allowDataOverflow={true}
               domain={[props.from, props.to]}
             />
-              <YAxis 
-                yAxisId= "y1"
-                orientation="left"
-                stroke='#f2f2f2' 
-                tick={{fontSize: '2vh', fill: '#ff9933', dy:-10}}
-                tickFormatter={(d) => {
-                    if (moneyCriteria.includes(props.selectedCriteria1)) {
-                        return '$' + d.toString().slice(0,7)
-                    } else {
-                        return d.toString().slice(0,7)
-                    } 
-                }}
-                domain={[bottom, top]}
-                reversed={false}
-                padding={{ top: 10, bottom: 10 }}
-              />
+            <YAxis 
+              yAxisId= "y1"
+              orientation="left"
+              stroke='#f2f2f2' 
+              tick={{fontSize: '2vh', fill: '#ff9933', dy:-10}}
+              tickFormatter={(d) => {
+                  if (moneyCriteria.includes(props.selectedCriteria1)) {
+                      return '$' + d.toString().slice(0,7)
+                  } else {
+                      return d.toString().slice(0,7)
+                  } 
+              }}
+              domain={[bottom, top]}
+              ticks={getTicks(bottom, top, 4)}
+              reversed={false}
+              padding={{ top: 10, bottom: 10 }}
+            />
             <YAxis
               yAxisId= "y2"
               orientation="right"
@@ -309,7 +324,8 @@ export default function SymbolChart(props) {
                     return d.toString().slice(0,7)
                 } 
               }}
-              domain={[bottom2, top2]}
+              domain={[bottom, top]}
+              ticks={getTicks(bottom, top, 4)}
               reversed={false}
               padding={{ top: 10, bottom: 10 }}
             />
