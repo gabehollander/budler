@@ -64,7 +64,7 @@ const CriteriaContainer = props => {
             position: 'absolute',
             top: '1%',
             left: '1%',
-            overflow: 'scroll',
+            overflow: 'auto',
             width: '100%',
             height: '100%',
             justifyContent: 'space-between',
