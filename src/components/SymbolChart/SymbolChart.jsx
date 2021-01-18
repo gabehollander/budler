@@ -70,8 +70,10 @@ export default function SymbolChart(props) {
 
     // for adjusting y axis on search and zoom.
     const getAxisYDomain = (from, to, ref, offset) => {
-      const fromIdx = props.currentData.findIndex(e => {return e.x === from});
-      const toIdx = props.currentData.findIndex(e => {return e.x === to});
+      let fromIdx = props.currentData.findIndex(e => {return e.x === from});
+      if (fromIdx === -1) fromIdx = 0;
+      let toIdx = props.currentData.findIndex(e => {return e.x === to});
+      if (toIdx === -1) toIdx = props.currentData.length - 1;
       const refData = props.currentData.slice(fromIdx, toIdx);
       let [ bottom, top ] = [ refData[0][ref], refData[0][ref] ];
       refData.forEach( d => {
