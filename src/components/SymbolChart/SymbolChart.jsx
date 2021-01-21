@@ -76,9 +76,14 @@ export default function SymbolChart(props) {
       let fromIdx = props.currentData.findIndex(e => {return e.x === from});
       if (fromIdx === -1) fromIdx = 0;
       let toIdx = props.currentData.findIndex(e => {return e.x === to});
-      if (toIdx === -1) toIdx = props.currentData.length - 1;
+      if (toIdx === -1) {
+        if (props.currentData.length === 1) {
+          toIdx = 1;
+        } else {
+          toIdx = props.currentData.length - 1;
+        }
+      }
       const refData = props.currentData.slice(fromIdx, toIdx);
-      console.log(props.currentData);
       let [ bottom, top ] = [ refData[0][ref], refData[0][ref] ];
       refData.forEach( d => {
         if ( d[ref] > top ) top = d[ref];
